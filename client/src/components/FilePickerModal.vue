@@ -60,6 +60,23 @@
               <span class="toggle-knob"></span>
             </button>
           </div>
+          <!-- 索引状态指示 -->
+          <div
+            v-if="globalSearch"
+            class="index-status"
+            :class="indexStatus.status"
+            :title="indexStatus.status === 'ready'
+              ? `索引就绪，共 ${indexStatus.totalFiles} 项，已扫描: ${(indexStatus.scannedRoots || []).join(', ') || 'unknown'}`
+              : indexStatus.status === 'indexing'
+              ? `正在建索引... ${indexStatus.indexedFiles} 项，当前: ${indexStatus.currentDir || ''}`
+              : '索引未就绪，使用实时搜索'"
+            @click="indexStatus.status !== 'indexing' && reindex()"
+          >
+            <span class="status-dot"></span>
+            <span class="status-text">
+              {{ indexStatus.status === 'ready' ? '索引' : indexStatus.status === 'indexing' ? '索引中' : '离线' }}
+            </span>
+          </div>
         </div>
 
         <!-- 主内容区 -->
@@ -115,6 +132,9 @@
                 <SvgIcon name="search" :size="14" color="var(--text-dim)" />
                 <span>找到 <strong>{{ globalSearchResults.length }}</strong> 个结果</span>
                 <span v-if="globalSearchTruncated" class="truncated-hint">（已达上限，请缩小关键词）</span>
+                <span class="engine-badge" :class="globalSearchEngine">
+                  {{ globalSearchEngine === 'index' ? '索引搜索' : '实时搜索' }}
+                </span>
                 <span class="elapsed-hint">{{ globalSearchElapsed }}ms</span>
               </div>
 
@@ -152,11 +172,17 @@
                   :color="getItemColor(item)"
                   class="file-icon"
                 />
-                <span class="file-name">{{ item.name }}</span>
+                <span class="file-name" :title="item.name">{{ item.name }}</span>
                 <!-- 全局搜索时显示父目录路径 -->
-                <span v-if="isGlobalSearchActive" class="file-parent-path">{{ getParentDir(item.path) }}</span>
-                <span class="file-size" v-if="item.kind === 'file'">{{ formatSize(item.size) }}</span>
-                <span class="file-modified" v-if="item.modified">{{ formatDate(item.modified) }}</span>
+                <span
+                  v-if="isGlobalSearchActive"
+                  class="file-parent-path"
+                  :title="item.path"
+                >
+                  {{ getParentDir(item.path) }}
+                </span>
+                <span class="file-size" v-if="item.kind === 'file'" :title="formatSize(item.size)">{{ formatSize(item.size) }}</span>
+                <span class="file-modified" v-if="item.modified" :title="item.modified">{{ formatDate(item.modified) }}</span>
               </div>
             </div>
           </div>
@@ -216,6 +242,8 @@ const globalSearching = ref(false);
 const globalSearchResults = ref([]);
 const globalSearchTruncated = ref(false);
 const globalSearchElapsed = ref(0);
+const globalSearchEngine = ref(''); // 'index' | 'walk' | ''
+const indexStatus = ref({ status: 'idle', totalFiles: 0, indexedFiles: 0, currentDir: '', scannedRoots: [] });
 let searchAbortController = null;
 
 // 快捷路径
@@ -290,6 +318,17 @@ async function fetchDrives() {
   } catch (err) {
     console.warn('[fetchDrives] 获取盘符失败:', err.message);
     drives.value = [];
+  }
+}
+
+async function fetchIndexStatus() {
+  try {
+    const resp = await fetch('/api/fs/index-status');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    indexStatus.value = data;
+  } catch {
+    // 忽略
   }
 }
 
@@ -505,6 +544,7 @@ async function doGlobalSearch(query) {
     globalSearchResults.value = data.items || [];
     globalSearchTruncated.value = data.truncated || false;
     globalSearchElapsed.value = data.elapsed || 0;
+    globalSearchEngine.value = data.engine || '';
   } catch (err) {
     if (err.name === 'AbortError') return; // 被新搜索取消，不处理
     console.warn('[globalSearch] 搜索失败:', err.message);
@@ -519,6 +559,21 @@ function getParentDir(filePath) {
   const parts = filePath.replace(/[/\\]/g, '/').split('/');
   parts.pop(); // 去掉文件名
   return parts.join('/');
+}
+
+async function reindex() {
+  try {
+    await fetch('/api/fs/reindex', { method: 'POST' });
+    indexStatus.value = { ...indexStatus.value, status: 'indexing' };
+    const poll = setInterval(async () => {
+      await fetchIndexStatus();
+      if (indexStatus.value.status === 'ready' || indexStatus.value.status === 'error') {
+        clearInterval(poll);
+      }
+    }, 2000);
+  } catch {
+    // 忽略
+  }
 }
 
 // ===== 工具 =====
@@ -553,9 +608,9 @@ watch(() => props.visible, async (val) => {
     exitGlobalSearch();
     const home = await fetchHome();
     await fetchDrives();
+    await fetchIndexStatus();
     await fetchDirectory(home || '');
   } else {
-    // 关闭时清理
     exitGlobalSearch();
   }
 });
@@ -776,6 +831,64 @@ watch(() => props.visible, async (val) => {
 .toggle-switch.active .toggle-knob {
   left: 18px;
   background: #fff;
+}
+
+/* 索引状态指示器 */
+.index-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+.index-status:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.index-status.ready .status-dot {
+  background: #34d399;
+  box-shadow: 0 0 4px #34d399;
+}
+.index-status.indexing .status-dot {
+  background: #f59e0b;
+  animation: pulse 1s ease-in-out infinite;
+}
+.index-status.idle .status-dot,
+.index-status.error .status-dot {
+  background: #6b7280;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.status-text {
+  font-size: 0.72rem;
+  color: #5a6180;
+  white-space: nowrap;
+}
+
+/* 搜索引擎标识 */
+.engine-badge {
+  font-size: 0.72rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.engine-badge.index {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+.engine-badge.walk {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
 }
 
 /* 主内容区 */
