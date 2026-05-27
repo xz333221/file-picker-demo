@@ -1,8 +1,24 @@
 {
   "name": "local-file-picker",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vue 3 file/directory picker modal backed by a Node.js Express middleware. Returns absolute paths from the local filesystem.",
-  "keywords": ["file-picker", "file-selector", "directory-picker", "vue3", "express", "local-filesystem", "absolute-path"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xz333221/file-picker-demo.git"
+  },
+  "homepage": "https://github.com/xz333221/file-picker-demo#readme",
+  "bugs": {
+    "url": "https://github.com/xz333221/file-picker-demo/issues"
+  },
+  "keywords": [
+    "file-picker",
+    "file-selector",
+    "directory-picker",
+    "vue3",
+    "express",
+    "local-filesystem",
+    "absolute-path"
+  ],
   "license": "MIT",
   "author": "xuze",
   "type": "module",
