@@ -222,6 +222,7 @@ import { getFileTypeColor } from '../icons/index.js';
 const props = defineProps({
   visible: { type: Boolean, default: false },
   mode: { type: String, default: 'file' }, // 'file' | 'directory'
+  apiBase: { type: String, default: '/api' }, // API 服务基础路径，如 'http://localhost:8642/api'
 });
 
 const emit = defineEmits(['close', 'confirm']);
@@ -298,7 +299,7 @@ const pathSegments = computed(() => {
 
 async function fetchHome() {
   try {
-    const resp = await fetch('/api/fs/home');
+    const resp = await fetch(`${props.apiBase}/fs/home`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     homePath.value = data.home;
@@ -311,7 +312,7 @@ async function fetchHome() {
 
 async function fetchDrives() {
   try {
-    const resp = await fetch('/api/fs/drives');
+    const resp = await fetch(`${props.apiBase}/fs/drives`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     drives.value = data.drives || [];
@@ -323,7 +324,7 @@ async function fetchDrives() {
 
 async function fetchIndexStatus() {
   try {
-    const resp = await fetch('/api/fs/index-status');
+    const resp = await fetch(`${props.apiBase}/fs/index-status`);
     if (!resp.ok) return;
     const data = await resp.json();
     indexStatus.value = data;
@@ -338,7 +339,7 @@ async function fetchDirectory(dir) {
   try {
     const params = new URLSearchParams();
     if (dir) params.set('dir', dir);
-    const resp = await fetch(`/api/fs/list?${params}`);
+    const resp = await fetch(`${props.apiBase}/fs/list?${params}`);
     if (!resp.ok) {
       let errMsg = `HTTP ${resp.status}`;
       try {
@@ -525,7 +526,7 @@ async function doGlobalSearch(query) {
       mode: props.mode === 'directory' ? 'directory' : props.mode === 'file' ? 'file' : 'all',
       limit: '200',
     });
-    const resp = await fetch(`/api/fs/search?${params}`, {
+    const resp = await fetch(`${props.apiBase}/fs/search?${params}`, {
       signal: searchAbortController.signal,
     });
     if (!resp.ok) {
@@ -563,7 +564,7 @@ function getParentDir(filePath) {
 
 async function reindex() {
   try {
-    await fetch('/api/fs/reindex', { method: 'POST' });
+    await fetch(`${props.apiBase}/fs/reindex`, { method: 'POST' });
     indexStatus.value = { ...indexStatus.value, status: 'indexing' };
     const poll = setInterval(async () => {
       await fetchIndexStatus();

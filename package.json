@@ -1,13 +1,38 @@
 {
-  "name": "file-picker-demo",
-  "version": "1.0.0",
-  "private": true,
+  "name": "file-picker-node",
+  "version": "0.1.0",
+  "description": "Vue 3 file/directory picker modal backed by a Node.js Express middleware. Returns absolute paths from the local filesystem.",
+  "keywords": ["file-picker", "file-selector", "directory-picker", "vue3", "express", "local-filesystem", "absolute-path"],
+  "license": "MIT",
+  "author": "xuze",
+  "type": "module",
+  "exports": {
+    ".": "./server/middleware.js",
+    "./client": "./dist/file-picker.mjs",
+    "./server": "./server/middleware.js"
+  },
+  "main": "./server/middleware.js",
+  "files": [
+    "dist",
+    "server/middleware.js",
+    "server/indexer",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "dev": "concurrently -n server,client -c blue,green \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "npm run dev --prefix server",
-    "dev:client": "npm run dev --prefix client"
+    "dev:client": "npm run dev --prefix client",
+    "build": "vite build --config vite.lib.config.js",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "express": ">=4.0.0",
+    "vue": ">=3.0.0"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "@vitejs/plugin-vue": "^6.0.7",
+    "concurrently": "^9.1.2",
+    "vite": "^7.0.14"
   }
 }
