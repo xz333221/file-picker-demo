@@ -1,11 +1,11 @@
 <template>
   <Teleport to="body">
     <div v-if="visible" class="modal-overlay" @click.self="$emit('close')">
-      <div class="modal-container">
+      <div class="modal-container" :class="{ 'modal-theme-light': theme === 'light' }">
         <!-- 头部 -->
         <div class="modal-header">
           <h3 class="modal-title">
-            <SvgIcon :name="mode === 'file' ? 'file' : 'folder'" :size="18" :color="mode === 'file' ? 'var(--primary)' : 'var(--accent)'" />
+            <SvgIcon :name="mode === 'file' ? 'file' : 'folder'" :size="18" :color="titleIconColor" />
             {{ mode === 'file' ? '选择文件' : '选择文件夹' }}
           </h3>
           <button class="close-btn" @click="$emit('close')" title="关闭">
@@ -39,7 +39,7 @@
 
         <!-- 搜索栏 -->
         <div class="search-bar">
-          <SvgIcon name="search" :size="16" color="var(--text-dim)" class="search-icon" />
+          <SvgIcon name="search" :size="16" color="#8b91a8" class="search-icon" />
           <input
             v-model="searchQuery"
             type="text"
@@ -129,7 +129,7 @@
             <div v-else class="file-list">
               <!-- 全局搜索结果提示 -->
               <div v-if="globalSearchResults.length > 0" class="search-results-info">
-                <SvgIcon name="search" :size="14" color="var(--text-dim)" />
+                <SvgIcon name="search" :size="14" color="#8b91a8" />
                 <span>找到 <strong>{{ globalSearchResults.length }}</strong> 个结果</span>
                 <span v-if="globalSearchTruncated" class="truncated-hint">（已达上限，请缩小关键词）</span>
                 <span class="engine-badge" :class="globalSearchEngine">
@@ -147,7 +147,7 @@
                 @click.ctrl="toggleSelect(currentPath)"
                 @click.meta="toggleSelect(currentPath)"
               >
-                <SvgIcon name="circleCheck" :size="18" color="var(--accent)" class="file-icon" />
+                <SvgIcon name="circleCheck" :size="18" color="#a78bfa" class="file-icon" />
                 <span class="file-name">选择当前文件夹</span>
                 <span class="file-path-hint">{{ currentPath }}</span>
               </div>
@@ -194,6 +194,9 @@
             <span v-if="selectedPaths.length === 0" class="no-selection">
               未选择{{ mode === 'file' ? '文件' : '文件夹' }}
             </span>
+            <span v-else-if="!multiple" class="has-selection single-path" :title="selectedPaths[0]">
+              {{ selectedPaths[0] }}
+            </span>
             <span v-else class="has-selection">
               已选择 <strong>{{ selectedPaths.length }}</strong> 项
             </span>
@@ -222,10 +225,17 @@ import { getFileTypeColor } from '../icons/index.js';
 const props = defineProps({
   visible: { type: Boolean, default: false },
   mode: { type: String, default: 'file' }, // 'file' | 'directory'
+  multiple: { type: Boolean, default: false }, // 是否允许多选，默认单选
+  theme: { type: String, default: 'dark' }, // 'dark' | 'light'
   apiBase: { type: String, default: '/api' }, // API 服务基础路径，如 'http://localhost:8642/api'
 });
 
 const emit = defineEmits(['close', 'confirm']);
+
+const titleIconColor = computed(() => {
+  if (props.mode === 'file') return props.theme === 'light' ? '#3b82f6' : '#6c8cff';
+  return '#a78bfa';
+});
 
 const loading = ref(false);
 const error = ref('');
@@ -409,6 +419,11 @@ function isSelected(path) {
 }
 
 function toggleSelect(path) {
+  if (!props.multiple) {
+    // 单选模式：点击已选中的则取消，否则替换
+    selectedPaths.value = selectedPaths.value[0] === path ? [] : [path];
+    return;
+  }
   const idx = selectedPaths.value.indexOf(path);
   if (idx >= 0) {
     selectedPaths.value.splice(idx, 1);
@@ -436,6 +451,11 @@ function handleClick(item, event) {
 }
 
 function handleCtrlClick(item) {
+  if (!props.multiple) {
+    // 单选模式下 ctrl+click 与普通 click 相同
+    handleClick(item, {});
+    return;
+  }
   if (item.kind === 'directory') {
     toggleSelect(item.path);
   } else if (props.mode === 'file') {
@@ -594,7 +614,7 @@ function formatDate(iso) {
 }
 
 function getItemColor(item) {
-  if (item.kind === 'directory') return 'var(--accent)';
+  if (item.kind === 'directory') return '#a78bfa';
   const ext = (item.ext || '').replace('.', '');
   return getFileTypeColor(ext);
 }
@@ -1107,6 +1127,15 @@ watch(() => props.visible, async (val) => {
 .has-selection {
   color: #6c8cff;
 }
+.single-path {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.82rem;
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
 
 .footer-actions {
   display: flex;
@@ -1141,5 +1170,172 @@ watch(() => props.visible, async (val) => {
 }
 .btn-confirm:hover:not(:disabled) {
   background: #5a7af0;
+}
+
+/* ===== Light theme overrides ===== */
+.modal-theme-light {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+.modal-theme-light .modal-header {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+.modal-theme-light .modal-title {
+  color: #1e293b;
+}
+.modal-theme-light .close-btn {
+  color: #64748b;
+}
+.modal-theme-light .close-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+.modal-theme-light .toolbar {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+.modal-theme-light .tool-btn {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+.modal-theme-light .tool-btn:hover:not(:disabled) {
+  background: #cbd5e1;
+}
+.modal-theme-light .path-breadcrumb {
+  color: #64748b;
+}
+.modal-theme-light .breadcrumb-item:hover .breadcrumb-text {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+.modal-theme-light .breadcrumb-sep {
+  color: #cbd5e1;
+}
+.modal-theme-light .search-bar {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+.modal-theme-light .search-input {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+.modal-theme-light .search-input::placeholder {
+  color: #94a3b8;
+}
+.modal-theme-light .search-input:focus {
+  border-color: #3b82f6;
+}
+.modal-theme-light .toggle-label {
+  color: #94a3b8;
+}
+.modal-theme-light .toggle-switch {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+.modal-theme-light .toggle-switch.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+.modal-theme-light .toggle-knob {
+  background: #94a3b8;
+}
+.modal-theme-light .sidebar {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+.modal-theme-light .sidebar-section {
+  border-color: #e2e8f0;
+}
+.modal-theme-light .sidebar-title {
+  color: #94a3b8;
+}
+.modal-theme-light .sidebar-item {
+  color: #475569;
+}
+.modal-theme-light .sidebar-item:hover {
+  background: rgba(59, 130, 246, 0.06);
+  color: #3b82f6;
+}
+.modal-theme-light .sidebar-item.active {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+.modal-theme-light .file-list-container {
+  background: #ffffff;
+}
+.modal-theme-light .file-row {
+  border-color: rgba(226, 232, 240, 0.6);
+  color: #1e293b;
+}
+.modal-theme-light .file-row:hover {
+  background: rgba(59, 130, 246, 0.05);
+}
+.modal-theme-light .file-row.selected {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+.modal-theme-light .file-row.is-directory .file-name {
+  color: #0f172a;
+}
+.modal-theme-light .file-size {
+  color: #64748b;
+}
+.modal-theme-light .file-modified {
+  color: #94a3b8;
+}
+.modal-theme-light .file-path-hint {
+  color: #64748b;
+}
+.modal-theme-light .file-parent-path {
+  color: #94a3b8;
+}
+.modal-theme-light .select-current-dir {
+  background: rgba(139, 92, 246, 0.05);
+  border-color: rgba(139, 92, 246, 0.1);
+}
+.modal-theme-light .select-current-dir:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+.modal-theme-light .select-current-dir.selected {
+  background: rgba(139, 92, 246, 0.15);
+}
+.modal-theme-light .search-results-info {
+  color: #64748b;
+  background: rgba(59, 130, 246, 0.03);
+  border-color: #e2e8f0;
+}
+.modal-theme-light .loading-state,
+.modal-theme-light .empty-state {
+  color: #64748b;
+}
+.modal-theme-light .error-state {
+  color: #ef4444;
+}
+.modal-theme-light .modal-footer {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+.modal-theme-light .no-selection {
+  color: #94a3b8;
+}
+.modal-theme-light .has-selection {
+  color: #3b82f6;
+}
+.modal-theme-light .btn-cancel {
+  background: #e2e8f0;
+  color: #475569;
+}
+.modal-theme-light .btn-cancel:hover {
+  background: #cbd5e1;
+}
+.modal-theme-light .btn-confirm {
+  background: #3b82f6;
+}
+.modal-theme-light .btn-confirm:hover:not(:disabled) {
+  background: #2563eb;
 }
 </style>
