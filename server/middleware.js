@@ -65,6 +65,9 @@ export function createFilePickerMiddleware(options = {}) {
 
   function initDatabase() {
     db = new DatabaseSync(dbPath);
+    // WAL 模式减少写锁冲突，busy_timeout 避免多实例启动时 "database is locked"
+    db.exec('PRAGMA journal_mode = WAL;');
+    db.exec('PRAGMA busy_timeout = 5000;');
     db.exec(`
       CREATE TABLE IF NOT EXISTS file_index (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
