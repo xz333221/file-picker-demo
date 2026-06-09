@@ -6,22 +6,22 @@
         <div class="modal-header">
           <h3 class="modal-title">
             <SvgIcon :name="mode === 'file' ? 'file' : 'folder'" :size="18" :color="titleIconColor" />
-            {{ mode === 'file' ? '选择文件' : '选择文件夹' }}
+            {{ t(mode === 'file' ? 'modal.title.file' : 'modal.title.directory') }}
           </h3>
-          <button class="close-btn" @click="$emit('close')" title="关闭">
+          <button class="close-btn" @click="$emit('close')" :title="t('modal.close')">
             <SvgIcon name="close" :size="16" />
           </button>
         </div>
 
         <!-- 工具栏 -->
         <div class="toolbar">
-          <button class="tool-btn" @click="goUp" :disabled="!parentPath" title="返回上一级">
-            <SvgIcon name="arrowUp" :size="14" /> 上级
+          <button class="tool-btn" @click="goUp" :disabled="!parentPath" :title="t('tooltip.back')">
+            <SvgIcon name="arrowUp" :size="14" /> {{ t('modal.up') }}
           </button>
-          <button class="tool-btn" @click="goHome" title="家目录">
-            <SvgIcon name="home" :size="14" /> 家目录
+          <button class="tool-btn" @click="goHome" :title="t('tooltip.home')">
+            <SvgIcon name="home" :size="14" /> {{ t('modal.home') }}
           </button>
-          <button class="tool-btn" @click="refresh" title="刷新">
+          <button class="tool-btn" @click="refresh" :title="t('tooltip.refresh')">
             <SvgIcon name="refresh" :size="14" />
           </button>
           <div class="path-breadcrumb">
@@ -44,14 +44,16 @@
             v-model="searchQuery"
             type="text"
             class="search-input"
-            :placeholder="globalSearch ? `全局搜索${mode === 'file' ? '文件' : mode === 'directory' ? '文件夹' : '文件和文件夹'}...` : `搜索当前目录...`"
+            :placeholder="globalSearch
+              ? t('search.placeholderGlobal', { type: t('search.type.' + (mode === 'file' ? 'file' : mode === 'directory' ? 'directory' : 'all')) })
+              : t('search.placeholderLocal')"
             @keydown.enter="onSearchEnter"
           />
           <button v-if="searchQuery" class="clear-search" @click="clearSearch">
             <SvgIcon name="close" :size="14" />
           </button>
-          <div class="global-toggle" :title="globalSearch ? '全局搜索：在整个磁盘范围内搜索' : '当前目录搜索：仅在当前目录中过滤'">
-            <span class="toggle-label">全局</span>
+          <div class="global-toggle" :title="globalSearch ? t('tooltip.globalSearchOn') : t('tooltip.globalSearchOff')">
+            <span class="toggle-label">{{ t('search.globalLabel') }}</span>
             <button
               class="toggle-switch"
               :class="{ active: globalSearch }"
@@ -66,15 +68,25 @@
             class="index-status"
             :class="indexStatus.status"
             :title="indexStatus.status === 'ready'
-              ? `索引就绪，共 ${indexStatus.totalFiles} 项，已扫描: ${(indexStatus.scannedRoots || []).join(', ') || 'unknown'}`
+              ? t('tooltip.indexReady', {
+                  totalFiles: indexStatus.totalFiles,
+                  scannedRoots: (indexStatus.scannedRoots || []).join(', ') || 'unknown',
+                })
               : indexStatus.status === 'indexing'
-              ? `正在建索引... ${indexStatus.indexedFiles} 项，当前: ${indexStatus.currentDir || ''}`
-              : '索引未就绪，使用实时搜索'"
+              ? t('tooltip.indexing', {
+                  indexedFiles: indexStatus.indexedFiles,
+                  currentDir: indexStatus.currentDir || '',
+                })
+              : t('tooltip.indexIdle')"
             @click="indexStatus.status !== 'indexing' && reindex()"
           >
             <span class="status-dot"></span>
             <span class="status-text">
-              {{ indexStatus.status === 'ready' ? '索引' : indexStatus.status === 'indexing' ? '索引中' : '离线' }}
+              {{ indexStatus.status === 'ready'
+                ? t('status.indexReady')
+                : indexStatus.status === 'indexing'
+                ? t('status.indexing')
+                : t('status.indexIdle') }}
             </span>
           </div>
         </div>
@@ -84,22 +96,22 @@
           <!-- 左侧快捷栏 -->
           <div class="sidebar">
             <div class="sidebar-section">
-              <div class="sidebar-title">快捷访问</div>
+              <div class="sidebar-title">{{ t('sidebar.quickAccess') }}</div>
               <div class="sidebar-item" @click="goHome">
-                <SvgIcon name="home" :size="15" /> 家目录
+                <SvgIcon name="home" :size="15" /> {{ t('sidebar.home') }}
               </div>
               <div class="sidebar-item" @click="navigateTo(desktopPath)" v-if="desktopPath">
-                <SvgIcon name="monitor" :size="15" /> 桌面
+                <SvgIcon name="monitor" :size="15" /> {{ t('sidebar.desktop') }}
               </div>
               <div class="sidebar-item" @click="navigateTo(docsPath)" v-if="docsPath">
-                <SvgIcon name="file" :size="15" /> 文档
+                <SvgIcon name="file" :size="15" /> {{ t('sidebar.documents') }}
               </div>
               <div class="sidebar-item" @click="navigateTo(downloadsPath)" v-if="downloadsPath">
-                <SvgIcon name="download" :size="15" /> 下载
+                <SvgIcon name="download" :size="15" /> {{ t('sidebar.downloads') }}
               </div>
             </div>
             <div class="sidebar-section" v-if="drives.length">
-              <div class="sidebar-title">磁盘</div>
+              <div class="sidebar-title">{{ t('sidebar.drives') }}</div>
               <div
                 v-for="drive in drives"
                 :key="drive"
@@ -115,27 +127,27 @@
           <!-- 文件列表 -->
           <div class="file-list-container" @click.self="clearSelection">
             <div v-if="loading" class="loading-state">
-              <span class="spinner"></span> 加载中...
+              <span class="spinner"></span> {{ t('state.loading') }}
             </div>
             <div v-else-if="error" class="error-state">
               <SvgIcon name="circleX" :size="18" color="currentColor" /> {{ error }}
             </div>
             <div v-else-if="globalSearching" class="loading-state">
-              <span class="spinner"></span> 全局搜索中...
+              <span class="spinner"></span> {{ t('state.globalSearching') }}
             </div>
             <div v-else-if="filteredItems.length === 0" class="empty-state">
-              {{ searchQuery ? '没有匹配的结果' : '空目录' }}
+              {{ searchQuery ? t('state.emptySearch') : t('state.emptyDir') }}
             </div>
             <div v-else class="file-list">
               <!-- 全局搜索结果提示 -->
               <div v-if="globalSearchResults.length > 0" class="search-results-info">
                 <SvgIcon name="search" :size="14" color="#8b91a8" />
-                <span>找到 <strong>{{ globalSearchResults.length }}</strong> 个结果</span>
-                <span v-if="globalSearchTruncated" class="truncated-hint">（已达上限，请缩小关键词）</span>
+                <span v-html="t('results.found', { count: globalSearchResults.length })"></span>
+                <span v-if="globalSearchTruncated" class="truncated-hint">{{ t('results.truncated') }}</span>
                 <span class="engine-badge" :class="globalSearchEngine">
-                  {{ globalSearchEngine === 'index' ? '索引搜索' : '实时搜索' }}
+                  {{ globalSearchEngine === 'index' ? t('search.engineIndex') : t('search.engineWalk') }}
                 </span>
-                <span class="elapsed-hint">{{ globalSearchElapsed }}ms</span>
+                <span class="elapsed-hint">{{ globalSearchElapsed }}{{ t('unit.ms') }}</span>
               </div>
 
               <!-- 文件夹模式：选中当前目录的选项（仅非全局搜索时显示） -->
@@ -148,7 +160,7 @@
                 @click.meta="toggleSelect(currentPath)"
               >
                 <SvgIcon name="circleCheck" :size="18" color="#a78bfa" class="file-icon" />
-                <span class="file-name">选择当前文件夹</span>
+                <span class="file-name">{{ t('fileRow.selectCurrent') }}</span>
                 <span class="file-path-hint">{{ currentPath }}</span>
               </div>
 
@@ -192,23 +204,23 @@
         <div class="modal-footer">
           <div class="selected-info">
             <span v-if="selectedPaths.length === 0" class="no-selection">
-              未选择{{ mode === 'file' ? '文件' : '文件夹' }}
+              {{ t(mode === 'file' ? 'footer.unselectedFile' : 'footer.unselectedDir') }}
             </span>
             <span v-else-if="!multiple" class="has-selection single-path" :title="selectedPaths[0]">
               {{ selectedPaths[0] }}
             </span>
             <span v-else class="has-selection">
-              已选择 <strong>{{ selectedPaths.length }}</strong> 项
+              <span v-html="t('footer.selected', { count: selectedPaths.length })"></span>
             </span>
           </div>
           <div class="footer-actions">
-            <button class="btn btn-cancel" @click="$emit('close')">取消</button>
+            <button class="btn btn-cancel" @click="$emit('close')">{{ t('footer.cancel') }}</button>
             <button
               class="btn btn-confirm"
               :disabled="selectedPaths.length === 0"
               @click="confirmSelection"
             >
-              确认选择
+              {{ t('footer.confirm') }}
             </button>
           </div>
         </div>
@@ -222,15 +234,131 @@ import { ref, computed, watch } from 'vue';
 import SvgIcon from '../icons/SvgIcon.vue';
 import { getFileTypeColor } from '../icons/index.js';
 
+// ===== i18n =====
+const MESSAGES = {
+  'zh-CN': {
+    'modal.title.file': '选择文件',
+    'modal.title.directory': '选择文件夹',
+    'modal.close': '关闭',
+    'modal.up': '上级',
+    'modal.home': '家目录',
+    'tooltip.back': '返回上一级',
+    'tooltip.home': '家目录',
+    'tooltip.refresh': '刷新',
+    'tooltip.globalSearchOn': '全局搜索：在整个磁盘范围内搜索',
+    'tooltip.globalSearchOff': '当前目录搜索：仅在当前目录中过滤',
+    'tooltip.indexReady': '索引就绪，共 {totalFiles} 项，已扫描: {scannedRoots}',
+    'tooltip.indexing': '正在建索引... {indexedFiles} 项，当前: {currentDir}',
+    'tooltip.indexIdle': '索引未就绪，使用实时搜索',
+    'search.placeholderGlobal': '全局搜索{type}...',
+    'search.placeholderLocal': '搜索当前目录...',
+    'search.type.file': '文件',
+    'search.type.directory': '文件夹',
+    'search.type.all': '文件和文件夹',
+    'search.globalLabel': '全局',
+    'search.engineIndex': '索引搜索',
+    'search.engineWalk': '实时搜索',
+    'status.indexReady': '索引',
+    'status.indexing': '索引中',
+    'status.indexIdle': '离线',
+    'sidebar.quickAccess': '快捷访问',
+    'sidebar.home': '家目录',
+    'sidebar.desktop': '桌面',
+    'sidebar.documents': '文档',
+    'sidebar.downloads': '下载',
+    'sidebar.drives': '磁盘',
+    'state.loading': '加载中...',
+    'state.globalSearching': '全局搜索中...',
+    'state.emptySearch': '没有匹配的结果',
+    'state.emptyDir': '空目录',
+    'results.found': '找到 <strong>{count}</strong> 个结果',
+    'results.truncated': '（已达上限，请缩小关键词）',
+    'unit.ms': 'ms',
+    'fileRow.selectCurrent': '选择当前文件夹',
+    'footer.unselectedFile': '未选择文件',
+    'footer.unselectedDir': '未选择文件夹',
+    'footer.selected': '已选择 <strong>{count}</strong> 项',
+    'footer.cancel': '取消',
+    'footer.confirm': '确认选择',
+    'error.cannotConnect': '无法连接到后端服务，请确认后端已启动 (npm run dev)',
+    'error.network': '网络错误: {message}。请确认后端服务已启动。',
+    'error.searchFailed': '搜索请求失败',
+  },
+  'en-US': {
+    'modal.title.file': 'Select File',
+    'modal.title.directory': 'Select Folder',
+    'modal.close': 'Close',
+    'modal.up': 'Up',
+    'modal.home': 'Home',
+    'tooltip.back': 'Go to parent directory',
+    'tooltip.home': 'Home directory',
+    'tooltip.refresh': 'Refresh',
+    'tooltip.globalSearchOn': 'Global search: search across the entire disk',
+    'tooltip.globalSearchOff': 'Current folder search: filter within current folder only',
+    'tooltip.indexReady': 'Index ready, {totalFiles} items total, scanned: {scannedRoots}',
+    'tooltip.indexing': 'Building index... {indexedFiles} items, current: {currentDir}',
+    'tooltip.indexIdle': 'Index not ready, using live search',
+    'search.placeholderGlobal': 'Global search {type}...',
+    'search.placeholderLocal': 'Search current folder...',
+    'search.type.file': 'files',
+    'search.type.directory': 'folders',
+    'search.type.all': 'files and folders',
+    'search.globalLabel': 'Global',
+    'search.engineIndex': 'Index search',
+    'search.engineWalk': 'Live search',
+    'status.indexReady': 'Index',
+    'status.indexing': 'Indexing',
+    'status.indexIdle': 'Offline',
+    'sidebar.quickAccess': 'Quick Access',
+    'sidebar.home': 'Home',
+    'sidebar.desktop': 'Desktop',
+    'sidebar.documents': 'Documents',
+    'sidebar.downloads': 'Downloads',
+    'sidebar.drives': 'Drives',
+    'state.loading': 'Loading...',
+    'state.globalSearching': 'Global searching...',
+    'state.emptySearch': 'No matching results',
+    'state.emptyDir': 'Empty folder',
+    'results.found': 'Found <strong>{count}</strong> results',
+    'results.truncated': '(limit reached, please narrow keywords)',
+    'unit.ms': 'ms',
+    'fileRow.selectCurrent': 'Select current folder',
+    'footer.unselectedFile': 'No file selected',
+    'footer.unselectedDir': 'No folder selected',
+    'footer.selected': '<strong>{count}</strong> item(s) selected',
+    'footer.cancel': 'Cancel',
+    'footer.confirm': 'Confirm Selection',
+    'error.cannotConnect': 'Cannot connect to backend service, please make sure it is started (npm run dev)',
+    'error.network': 'Network error: {message}. Please make sure the backend service is running.',
+    'error.searchFailed': 'Search request failed',
+  },
+};
+const FALLBACK_LOCALE = 'zh-CN';
+
 const props = defineProps({
   visible: { type: Boolean, default: false },
   mode: { type: String, default: 'file' }, // 'file' | 'directory'
   multiple: { type: Boolean, default: false }, // 是否允许多选，默认单选
   theme: { type: String, default: 'dark' }, // 'dark' | 'light'
   apiBase: { type: String, default: '/api' }, // API 服务基础路径，如 'http://localhost:8642/api'
+  locale: { type: String, default: 'zh-CN' }, // 'zh-CN' | 'en-US'
+  messages: { type: Object, default: null }, // 外部完全覆盖字典（高级用法）
 });
 
 const emit = defineEmits(['close', 'confirm']);
+
+// 合并: 内置 → 外部覆盖 → 回退到内置
+const mergedMessages = computed(() => {
+  const base = MESSAGES[props.locale] || MESSAGES[FALLBACK_LOCALE];
+  return { ...base, ...(props.messages || {}) };
+});
+
+// t(key, params) 支持 {varName} 插值; HTML 内容（带 <strong>）安全传递
+function t(key, params = {}) {
+  let str = mergedMessages.value[key];
+  if (str == null) str = MESSAGES[FALLBACK_LOCALE][key] ?? key;
+  return str.replace(/\{(\w+)\}/g, (_, k) => params[k] ?? `{${k}}`);
+}
 
 const titleIconColor = computed(() => {
   if (props.mode === 'file') return props.theme === 'light' ? '#3b82f6' : '#6c8cff';
@@ -356,7 +484,7 @@ async function fetchDirectory(dir) {
         const errData = await resp.json();
         errMsg = errData.error || errMsg;
       } catch {
-        errMsg = '无法连接到后端服务，请确认后端已启动 (npm run dev)';
+        errMsg = t('error.cannotConnect');
       }
       error.value = errMsg;
       return;
@@ -366,7 +494,7 @@ async function fetchDirectory(dir) {
     parentPath.value = data.parentPath;
     items.value = data.items || [];
   } catch (err) {
-    error.value = `网络错误: ${err.message}。请确认后端服务已启动。`;
+    error.value = t('error.network', { message: err.message });
   } finally {
     loading.value = false;
   }
@@ -555,7 +683,7 @@ async function doGlobalSearch(query) {
         const errData = await resp.json();
         errMsg = errData.error || errMsg;
       } catch {
-        errMsg = '搜索请求失败';
+        errMsg = t('error.searchFailed');
       }
       globalSearchResults.value = [];
       globalSearching.value = false;
