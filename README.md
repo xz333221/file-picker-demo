@@ -8,6 +8,7 @@
 ## 功能特性
 
 - 📄 **选择文件 / 文件夹** — 可多选，返回本地绝对路径
+- 📁 **新建文件夹** — 弹窗内可直接创建目录，自动选中新文件夹（需后端中间件支持）
 - 🔍 **全局搜索** — 支持索引搜索（快）和实时遍历降级搜索
 - 📍 **面包屑导航** — 路径导航，支持快捷访问家目录、桌面、文档等
 - 💾 **盘符列表** — Windows 多盘符支持
@@ -112,6 +113,12 @@ function onConfirm(paths) {
 | `visible`  | `Boolean` | `false`  | 是否显示弹窗                                     |
 | `mode`     | `String`  | `'file'` | `'file'` 选文件 / `'directory'` 选文件夹         |
 | `api-base` | `String`  | `'/api'` | 后端 API 基础路径，如 `'http://localhost:3000/api'` |
+| `enable-mkdir` | `Boolean` | `false` | 是否启用弹窗内"新建文件夹"功能（需要后端中间件支持 `POST /fs/mkdir`） |
+| `auto-select-on-mkdir` | `Boolean` | `true` | 创建成功后自动选中新文件夹               |
+| `multiple` | `Boolean` | `false` | 是否允许多选                                |
+| `theme`    | `String`  | `'dark'` | `'dark'` / `'light'`                       |
+| `locale`   | `String`  | `'zh-CN'` | `'zh-CN'` / `'en-US'`                     |
+| `messages` | `Object`  | `null`  | 外部完全覆盖 i18n 字典（高级用法）           |
 
 #### 组件 Events
 
@@ -119,6 +126,7 @@ function onConfirm(paths) {
 | --------- | --------------- | ---------------------------- |
 | `close`   | —               | 弹窗关闭（取消或点击背景）   |
 | `confirm` | `paths: string[]` | 用户点击确认，携带选中路径 |
+| `created` | `{ path, name, parent }` | 新建文件夹成功后触发，携带新文件夹信息 |
 
 ---
 
@@ -135,6 +143,7 @@ function onConfirm(paths) {
 | `GET`  | `/api/fs/search`      | 全局搜索 `?q=关键词&mode=file\|directory\|all&limit=200` |
 | `GET`  | `/api/fs/index-status`| 索引进度状态                             |
 | `POST` | `/api/fs/reindex`     | 触发重建索引                             |
+| `POST` | `/api/fs/mkdir`       | 新建文件夹 `{ parent, name }`，返回 `{ path, name }` |
 
 ---
 

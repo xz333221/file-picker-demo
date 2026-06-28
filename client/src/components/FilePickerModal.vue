@@ -24,6 +24,14 @@
           <button class="tool-btn" @click="refresh" :title="t('tooltip.refresh')">
             <SvgIcon name="refresh" :size="14" />
           </button>
+          <button
+            v-if="enableMkdir && !isGlobalSearchActive"
+            class="tool-btn"
+            @click="openMkdirDialog"
+            :title="t('tooltip.newFolder')"
+          >
+            <SvgIcon name="folderPlus" :size="14" /> {{ t('modal.newFolder') }}
+          </button>
           <div class="path-breadcrumb">
             <span
               v-for="(segment, i) in pathSegments"
@@ -224,13 +232,64 @@
             </button>
           </div>
         </div>
+
+        <!-- 新建文件夹对话框 -->
+        <div
+          v-if="mkdirDialogOpen"
+          class="mkdir-overlay"
+          @click.self="closeMkdirDialog"
+          @keydown.esc="closeMkdirDialog"
+        >
+          <div class="mkdir-dialog" :class="{ 'modal-theme-light': theme === 'light' }">
+            <div class="mkdir-header">
+              <SvgIcon name="folderPlus" :size="18" color="#a78bfa" />
+              <span class="mkdir-title">{{ t('mkdir.title') }}</span>
+            </div>
+            <div class="mkdir-body">
+              <label class="mkdir-label">{{ t('mkdir.parentLabel') }}</label>
+              <div class="mkdir-parent-path" :title="mkdirParent">{{ mkdirParent }}</div>
+
+              <label class="mkdir-label" for="mkdir-name-input">{{ t('mkdir.nameLabel') }}</label>
+              <input
+                id="mkdir-name-input"
+                ref="mkdirNameInput"
+                v-model="mkdirName"
+                type="text"
+                class="mkdir-input"
+                :placeholder="t('mkdir.namePlaceholder')"
+                :class="{ 'has-error': mkdirError }"
+                @keydown.enter="submitMkdir"
+                @keydown.esc="closeMkdirDialog"
+                maxlength="255"
+              />
+              <div v-if="mkdirError" class="mkdir-error">
+                <SvgIcon name="circleX" :size="14" color="currentColor" />
+                <span>{{ mkdirError }}</span>
+              </div>
+              <div v-else-if="mkdirHint" class="mkdir-hint">{{ mkdirHint }}</div>
+            </div>
+            <div class="mkdir-footer">
+              <button class="btn btn-cancel" @click="closeMkdirDialog" :disabled="mkdirSubmitting">
+                {{ t('mkdir.cancel') }}
+              </button>
+              <button
+                class="btn btn-confirm"
+                :disabled="!mkdirName.trim() || mkdirSubmitting"
+                @click="submitMkdir"
+              >
+                <span v-if="mkdirSubmitting" class="spinner" style="width:12px;height:12px;border-width:2px;margin-right:6px;"></span>
+                {{ t('mkdir.confirm') }}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </Teleport>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import SvgIcon from '../icons/SvgIcon.vue';
 import { getFileTypeColor } from '../icons/index.js';
 
@@ -242,9 +301,11 @@ const MESSAGES = {
     'modal.close': '关闭',
     'modal.up': '上级',
     'modal.home': '家目录',
+    'modal.newFolder': '新建文件夹',
     'tooltip.back': '返回上一级',
     'tooltip.home': '家目录',
     'tooltip.refresh': '刷新',
+    'tooltip.newFolder': '在当前目录下新建文件夹',
     'tooltip.globalSearchOn': '全局搜索：在整个磁盘范围内搜索',
     'tooltip.globalSearchOff': '当前目录搜索：仅在当前目录中过滤',
     'tooltip.indexReady': '索引就绪，共 {totalFiles} 项，已扫描: {scannedRoots}',
@@ -283,6 +344,16 @@ const MESSAGES = {
     'error.cannotConnect': '无法连接到后端服务，请确认后端已启动 (npm run dev)',
     'error.network': '网络错误: {message}。请确认后端服务已启动。',
     'error.searchFailed': '搜索请求失败',
+    'mkdir.title': '新建文件夹',
+    'mkdir.parentLabel': '位置',
+    'mkdir.nameLabel': '文件夹名',
+    'mkdir.namePlaceholder': '请输入文件夹名',
+    'mkdir.hintExists': '已存在同名项目',
+    'mkdir.hintOk': '可用',
+    'mkdir.cancel': '取消',
+    'mkdir.confirm': '创建',
+    'mkdir.success': '已创建: {name}',
+    'mkdir.createdToast': '已创建文件夹',
   },
   'en-US': {
     'modal.title.file': 'Select File',
@@ -290,9 +361,11 @@ const MESSAGES = {
     'modal.close': 'Close',
     'modal.up': 'Up',
     'modal.home': 'Home',
+    'modal.newFolder': 'New Folder',
     'tooltip.back': 'Go to parent directory',
     'tooltip.home': 'Home directory',
     'tooltip.refresh': 'Refresh',
+    'tooltip.newFolder': 'Create a new folder in the current directory',
     'tooltip.globalSearchOn': 'Global search: search across the entire disk',
     'tooltip.globalSearchOff': 'Current folder search: filter within current folder only',
     'tooltip.indexReady': 'Index ready, {totalFiles} items total, scanned: {scannedRoots}',
@@ -331,6 +404,16 @@ const MESSAGES = {
     'error.cannotConnect': 'Cannot connect to backend service, please make sure it is started (npm run dev)',
     'error.network': 'Network error: {message}. Please make sure the backend service is running.',
     'error.searchFailed': 'Search request failed',
+    'mkdir.title': 'New Folder',
+    'mkdir.parentLabel': 'Location',
+    'mkdir.nameLabel': 'Folder name',
+    'mkdir.namePlaceholder': 'Enter a folder name',
+    'mkdir.hintExists': 'A folder with this name already exists',
+    'mkdir.hintOk': 'Available',
+    'mkdir.cancel': 'Cancel',
+    'mkdir.confirm': 'Create',
+    'mkdir.success': 'Created: {name}',
+    'mkdir.createdToast': 'Folder created',
   },
 };
 const FALLBACK_LOCALE = 'zh-CN';
@@ -343,9 +426,11 @@ const props = defineProps({
   apiBase: { type: String, default: '/api' }, // API 服务基础路径，如 'http://localhost:8642/api'
   locale: { type: String, default: 'zh-CN' }, // 'zh-CN' | 'en-US'
   messages: { type: Object, default: null }, // 外部完全覆盖字典（高级用法）
+  enableMkdir: { type: Boolean, default: false }, // 是否启用新建文件夹功能（需后端支持 POST /fs/mkdir）
+  autoSelectOnMkdir: { type: Boolean, default: true }, // 创建成功后是否自动选中新文件夹
 });
 
-const emit = defineEmits(['close', 'confirm']);
+const emit = defineEmits(['close', 'confirm', 'created']);
 
 // 合并: 内置 → 外部覆盖 → 回退到内置
 const mergedMessages = computed(() => {
@@ -385,6 +470,14 @@ const globalSearchEngine = ref(''); // 'index' | 'walk' | ''
 const indexStatus = ref({ status: 'idle', totalFiles: 0, indexedFiles: 0, currentDir: '', scannedRoots: [] });
 let searchAbortController = null;
 
+// 新建文件夹对话框状态
+const mkdirDialogOpen = ref(false);
+const mkdirName = ref('');
+const mkdirError = ref('');
+const mkdirParent = ref('');
+const mkdirSubmitting = ref(false);
+const mkdirNameInput = ref(null);
+
 // 快捷路径
 const desktopPath = computed(() => homePath.value ? homePath.value + '\\Desktop' : '');
 const docsPath = computed(() => homePath.value ? homePath.value + '\\Documents' : '');
@@ -392,6 +485,14 @@ const downloadsPath = computed(() => homePath.value ? homePath.value + '\\Downlo
 
 // 是否处于全局搜索激活状态（有结果或正在搜索）
 const isGlobalSearchActive = computed(() => globalSearch.value && globalSearchResults.value.length > 0);
+
+// 文件夹名是否与当前列表中的项目重名（用于实时提示）
+const mkdirHint = computed(() => {
+  if (!mkdirName.value.trim()) return '';
+  if (mkdirError.value) return '';
+  const conflict = items.value.some((it) => it.name.toLowerCase() === mkdirName.value.trim().toLowerCase());
+  return conflict ? t('mkdir.hintExists') : t('mkdir.hintOk');
+});
 
 // 搜索过滤
 const filteredItems = computed(() => {
@@ -725,6 +826,73 @@ async function reindex() {
   }
 }
 
+// ===== 新建文件夹 =====
+
+function openMkdirDialog() {
+  // 全局搜索激活时不允许创建（无明确 parent）
+  if (isGlobalSearchActive.value) return;
+  if (!currentPath.value) return;
+  mkdirDialogOpen.value = true;
+  mkdirName.value = '';
+  mkdirError.value = '';
+  mkdirParent.value = currentPath.value;
+  // 等 DOM 渲染完成后聚焦输入框
+  nextTick(() => {
+    if (mkdirNameInput.value && typeof mkdirNameInput.value.focus === 'function') {
+      mkdirNameInput.value.focus();
+    }
+  });
+}
+
+function closeMkdirDialog() {
+  if (mkdirSubmitting.value) return;
+  mkdirDialogOpen.value = false;
+  mkdirName.value = '';
+  mkdirError.value = '';
+}
+
+async function submitMkdir() {
+  const name = mkdirName.value.trim();
+  if (!name) {
+    mkdirError.value = t('error.invalidName') || '名称不能为空';
+    return;
+  }
+  if (mkdirSubmitting.value) return;
+  mkdirSubmitting.value = true;
+  mkdirError.value = '';
+  try {
+    const resp = await fetch(`${props.apiBase}/fs/mkdir`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ parent: currentPath.value, name }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      mkdirError.value = data.error || `HTTP ${resp.status}`;
+      return;
+    }
+    // 成功：关闭对话框、刷新当前目录、自动选中新文件夹
+    mkdirDialogOpen.value = false;
+    mkdirName.value = '';
+    mkdirError.value = '';
+    emit('created', { path: data.path, name: data.name, parent: currentPath.value });
+    // 刷新列表
+    await fetchDirectory(currentPath.value);
+    if (props.autoSelectOnMkdir && data.path) {
+      // 列表已包含新文件夹，选中它
+      if (props.multiple) {
+        if (!selectedPaths.value.includes(data.path)) selectedPaths.value.push(data.path);
+      } else {
+        selectedPaths.value = [data.path];
+      }
+    }
+  } catch (err) {
+    mkdirError.value = t('error.network', { message: err.message });
+  } finally {
+    mkdirSubmitting.value = false;
+  }
+}
+
 // ===== 工具 =====
 
 function formatSize(bytes) {
@@ -754,6 +922,9 @@ watch(() => props.visible, async (val) => {
     selectedPaths.value = [];
     searchQuery.value = '';
     error.value = '';
+    mkdirDialogOpen.value = false;
+    mkdirName.value = '';
+    mkdirError.value = '';
     exitGlobalSearch();
     const home = await fetchHome();
     await fetchDrives();
@@ -761,6 +932,7 @@ watch(() => props.visible, async (val) => {
     await fetchDirectory(home || '');
   } else {
     exitGlobalSearch();
+    mkdirDialogOpen.value = false;
   }
 });
 </script>
@@ -1278,6 +1450,9 @@ watch(() => props.visible, async (val) => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .btn:disabled {
   opacity: 0.4;
@@ -1288,7 +1463,7 @@ watch(() => props.visible, async (val) => {
   background: #2d3348;
   color: #c0c5d8;
 }
-.btn-cancel:hover {
+.btn-cancel:hover:not(:disabled) {
   background: #3a4160;
 }
 
@@ -1298,6 +1473,117 @@ watch(() => props.visible, async (val) => {
 }
 .btn-confirm:hover:not(:disabled) {
   background: #5a7af0;
+}
+
+/* ===== 新建文件夹对话框 ===== */
+.mkdir-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.mkdir-dialog {
+  width: 420px;
+  max-width: 90%;
+  background: #1e2230;
+  border: 1px solid #3a4160;
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mkdir-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #2d3348;
+  background: #222633;
+}
+
+.mkdir-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e4e7ef;
+}
+
+.mkdir-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mkdir-label {
+  font-size: 0.78rem;
+  color: #8b91a8;
+  margin-top: 4px;
+}
+
+.mkdir-parent-path {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.82rem;
+  color: #c0c5d8;
+  background: #2d3348;
+  border: 1px solid #3a4160;
+  padding: 6px 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: rtl; /* 让长路径从右侧开始截断 */
+  text-align: left;
+}
+
+.mkdir-input {
+  background: #2d3348;
+  border: 1px solid #3a4160;
+  color: #e4e7ef;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.mkdir-input::placeholder {
+  color: #5a6180;
+}
+.mkdir-input:focus {
+  border-color: #a78bfa;
+}
+.mkdir-input.has-error {
+  border-color: #f87171;
+}
+
+.mkdir-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: #f87171;
+  margin-top: 4px;
+}
+
+.mkdir-hint {
+  font-size: 0.76rem;
+  color: #5a6180;
+  margin-top: 4px;
+}
+
+.mkdir-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 18px;
+  border-top: 1px solid #2d3348;
+  background: #1a1d27;
 }
 
 /* ===== Light theme overrides ===== */
@@ -1457,7 +1743,7 @@ watch(() => props.visible, async (val) => {
   background: #e2e8f0;
   color: #475569;
 }
-.modal-theme-light .btn-cancel:hover {
+.modal-theme-light .btn-cancel:hover:not(:disabled) {
   background: #cbd5e1;
 }
 .modal-theme-light .btn-confirm {
@@ -1465,5 +1751,40 @@ watch(() => props.visible, async (val) => {
 }
 .modal-theme-light .btn-confirm:hover:not(:disabled) {
   background: #2563eb;
+}
+
+/* light theme - mkdir dialog */
+.modal-theme-light.mkdir-dialog,
+.mkdir-dialog.modal-theme-light {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+}
+.modal-theme-light .mkdir-header {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+.modal-theme-light .mkdir-title {
+  color: #1e293b;
+}
+.modal-theme-light .mkdir-label {
+  color: #64748b;
+}
+.modal-theme-light .mkdir-parent-path {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+.modal-theme-light .mkdir-input {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+.modal-theme-light .mkdir-input:focus {
+  border-color: #8b5cf6;
+}
+.modal-theme-light .mkdir-footer {
+  background: #f8fafc;
+  border-color: #e2e8f0;
 }
 </style>

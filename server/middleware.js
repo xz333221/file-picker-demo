@@ -389,22 +389,78 @@ export function createFilePickerMiddleware(options = {}) {
   });
 
   router.get('/fs/search', (req, res) => {
-    const query = (req.query.q || '').trim();
-    const mode = req.query.mode || 'all';
-    const maxResults = Math.min(parseInt(req.query.limit, 10) || 200, 500);
-    const searchDirParam = req.query.dir || null;
-    if (!query || query.length < 1) {
-      return res.json({ query, items: [], truncated: false, engine: 'none', elapsed: 0 });
-    }
-    if (indexState.status === 'ready' && db) {
-      return searchWithIndex(query, mode, maxResults, searchDirParam, res);
-    }
-    return searchWithWalk(query, mode, maxResults, searchDirParam, res);
-  });
+      const query = (req.query.q || '').trim();
+      const mode = req.query.mode || 'all';
+      const maxResults = Math.min(parseInt(req.query.limit, 10) || 200, 500);
+      const searchDirParam = req.query.dir || null;
+      if (!query || query.length < 1) {
+        return res.json({ query, items: [], truncated: false, engine: 'none', elapsed: 0 });
+      }
+      if (indexState.status === 'ready' && db) {
+        return searchWithIndex(query, mode, maxResults, searchDirParam, res);
+      }
+      return searchWithWalk(query, mode, maxResults, searchDirParam, res);
+    });
 
-  // ========== 初始化 ==========
+    // 校验文件夹名（不允许路径分隔符、保留字符、相对路径符号、首尾空格）
+          function validateDirName(name) {
+            if (typeof name !== 'string') return '文件夹名必须为字符串';
+            if (!name.trim()) return '文件夹名不能为空';
+            if (name.length > 255) return '文件夹名过长（最长 255 字符）';
+            if (/[\\/:*?"<>|]/.test(name)) return '文件夹名包含非法字符 \\ / : * ? " < > |';
+            if (name === '.' || name === '..') return '不允许使用 "." 或 ".."';
+            if (name !== name.trim()) return '文件夹名首尾不能有空格';
+            if (/[\x00-\x1f]/.test(name)) return '文件夹名包含不可见字符';
+            return null;
+          }
 
-  initDatabase();
+    router.post('/fs/mkdir', (req, res) => {
+      const { parent: parentRaw, name: nameRaw } = req.body || {};
+      const parent = sanitizePath(parentRaw);
+      if (!parent) {
+        return res.status(400).json({ error: '缺少 parent 参数或路径无效', code: 'MISSING_PARENT' });
+      }
+      let parentStat;
+      try { parentStat = fs.statSync(parent); } catch {
+        return res.status(404).json({ error: `父目录不存在: ${parent}`, code: 'PARENT_NOT_FOUND' });
+      }
+      if (!parentStat.isDirectory()) {
+        return res.status(400).json({ error: `父路径不是目录: ${parent}`, code: 'PARENT_NOT_DIRECTORY' });
+      }
+      const nameError = validateDirName(nameRaw);
+      if (nameError) {
+        return res.status(400).json({ error: nameError, code: 'INVALID_NAME' });
+      }
+      const name = nameRaw.trim();
+      const targetPath = path.join(parent, name);
+      // 防御性检查：resolved 后仍应在 parent 之内（防 path.join 的极端边界）
+      const resolvedTarget = path.resolve(targetPath);
+      const resolvedParent = path.resolve(parent);
+      if (!resolvedTarget.startsWith(resolvedParent + path.sep) && resolvedTarget !== resolvedParent) {
+        return res.status(400).json({ error: '非法目标路径', code: 'INVALID_PATH' });
+      }
+      if (fs.existsSync(targetPath)) {
+        return res.status(409).json({ error: `已存在同名文件或文件夹: ${name}`, code: 'ALREADY_EXISTS', path: targetPath });
+      }
+      try {
+        fs.mkdirSync(targetPath, { recursive: false });
+      } catch (err) {
+        return res.status(500).json({ error: `创建失败: ${err.message}`, code: 'MKDIR_ERROR' });
+      }
+      // 写入索引（如就绪）
+      try {
+        if (db && indexState.status === 'ready') {
+          db.prepare(
+            'INSERT OR REPLACE INTO file_index (name, name_lower, ext, kind, path, parent_dir, size, modified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+          ).run(name, name.toLowerCase(), '', 'directory', targetPath, parent, 0, new Date().toISOString());
+        }
+      } catch { /* 索引写入失败不影响创建成功 */ }
+      res.json({ message: '文件夹创建成功', path: targetPath, name });
+    });
+
+    // ========== 初始化 ==========
+
+    initDatabase();
   if (indexState.totalFiles === 0 || forceReindex) {
     startIndexing();
   } else {

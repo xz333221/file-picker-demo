@@ -25,7 +25,7 @@
           <SvgIcon name="folder" :size="40" color="var(--accent)" />
         </div>
         <h2>选择文件夹</h2>
-        <p>打开文件夹选择弹窗，可多选，返回文件夹的绝对路径</p>
+        <p>打开文件夹选择弹窗，支持新建文件夹、多选，返回绝对路径</p>
         <button class="btn btn-accent" @click="openPicker('directory')">
           选择文件夹
         </button>
@@ -33,11 +33,28 @@
     </main>
 
     <!-- 选择结果 -->
-    <section v-if="results.length" class="results">
+    <section v-if="results.length || createdFolders.length" class="results">
       <h2 class="results-title">
         <SvgIcon name="list" :size="18" color="var(--text-dim)" />
         选择结果
       </h2>
+
+      <!-- 最近创建的文件夹 -->
+      <div v-if="createdFolders.length" class="created-list">
+        <div class="created-title">
+          <SvgIcon name="folderPlus" :size="14" color="var(--accent)" />
+          最近创建的文件夹
+        </div>
+        <div v-for="(c, i) in createdFolders" :key="i" class="created-item">
+          <SvgIcon name="folder" :size="14" color="var(--accent)" />
+          <span class="created-name">{{ c.name }}</span>
+          <span class="created-path" :title="c.path">{{ c.path }}</span>
+          <button class="btn-icon" @click="removeCreated(i)" title="移除">
+            <SvgIcon name="close" :size="14" />
+          </button>
+        </div>
+      </div>
+
       <div v-for="(result, idx) in results" :key="idx" class="result-item">
         <div class="result-header" @click="toggleExpand(idx)">
           <SvgIcon
@@ -70,8 +87,10 @@
     <FilePickerModal
       :visible="modalVisible"
       :mode="modalMode"
+      :enable-mkdir="true"
       @close="modalVisible = false"
       @confirm="handleConfirm"
+      @created="handleCreated"
     />
   </div>
 </template>
@@ -84,6 +103,7 @@ import FilePickerModal from './components/FilePickerModal.vue';
 const modalVisible = ref(false);
 const modalMode = ref('file');
 const results = ref([]);
+const createdFolders = ref([]);
 
 function openPicker(mode) {
   modalMode.value = mode;
@@ -99,12 +119,22 @@ function handleConfirm(paths) {
   });
 }
 
+function handleCreated(info) {
+  // info: { path, name, parent }
+  createdFolders.value.unshift(info);
+  if (createdFolders.value.length > 10) createdFolders.value.pop();
+}
+
 function toggleExpand(idx) {
   results.value[idx].expanded = !results.value[idx].expanded;
 }
 
 function removeResult(idx) {
   results.value.splice(idx, 1);
+}
+
+function removeCreated(idx) {
+  createdFolders.value.splice(idx, 1);
 }
 </script>
 
@@ -200,6 +230,51 @@ body {
   margin-bottom: 16px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
+}
+
+/* 最近创建的文件夹 */
+.created-list {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.created-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--surface-hover);
+  border-bottom: 1px solid var(--border);
+}
+.created-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(45, 51, 72, 0.4);
+  font-size: 0.88rem;
+}
+.created-item:last-child { border-bottom: none; }
+.created-name {
+  font-weight: 500;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.created-path {
+  flex: 1;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: rtl;
+  text-align: left;
 }
 
 .result-item {

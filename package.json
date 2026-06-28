@@ -1,6 +1,6 @@
 {
   "name": "local-file-picker",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Vue 3 file/directory picker modal backed by a Node.js Express middleware. Returns absolute paths from the local filesystem.",
   "repository": {
     "type": "git",
