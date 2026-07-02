@@ -426,7 +426,7 @@ const props = defineProps({
   apiBase: { type: String, default: '/api' }, // API 服务基础路径，如 'http://localhost:8642/api'
   locale: { type: String, default: 'zh-CN' }, // 'zh-CN' | 'en-US'
   messages: { type: Object, default: null }, // 外部完全覆盖字典（高级用法）
-  enableMkdir: { type: Boolean, default: false }, // 是否启用新建文件夹功能（需后端支持 POST /fs/mkdir）
+  enableMkdir: { type: Boolean, default: true }, // 是否显示"新建文件夹"按钮（自 v0.1.5 起由中间件内置，无需后端额外配置）
   autoSelectOnMkdir: { type: Boolean, default: true }, // 创建成功后是否自动选中新文件夹
 });
 
