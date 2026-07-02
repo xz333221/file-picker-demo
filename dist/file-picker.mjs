@@ -1,4 +1,4 @@
-import { computed as x, openBlock as n, createElementBlock as i, normalizeClass as M, Fragment as X, renderList as Q, ref as u, watch as ke, createBlock as Oe, Teleport as Re, withModifiers as F, createElementVNode as s, createVNode as v, createTextVNode as g, toDisplayString as o, createCommentVNode as m, withDirectives as ge, withKeys as W, vModelText as ye, nextTick as Ee } from "vue";
+import { computed as x, openBlock as n, createElementBlock as r, normalizeClass as M, Fragment as X, renderList as Q, ref as u, watch as ke, createBlock as Oe, Teleport as Re, withModifiers as F, createElementVNode as s, createVNode as v, createTextVNode as g, toDisplayString as o, createCommentVNode as m, withDirectives as ge, withKeys as W, vModelText as ye, nextTick as Ee } from "vue";
 const Ge = {
   // 导航/操作
   arrowUp: ["M12 19V5m-7 7 7-7 7 7"],
@@ -94,8 +94,8 @@ function qe(d) {
 }
 const _e = (d, j) => {
   const z = d.__vccOpts || d;
-  for (const [r, S] of j)
-    z[r] = S;
+  for (const [i, S] of j)
+    z[i] = S;
   return z;
 }, Ze = ["width", "height", "stroke"], Ke = ["d"], We = {
   __name: "SvgIcon",
@@ -106,11 +106,11 @@ const _e = (d, j) => {
     class: { type: String, default: "" }
   },
   setup(d) {
-    const j = d, z = x(() => j.class), r = x(() => {
+    const j = d, z = x(() => j.class), i = x(() => {
       const S = Ge[j.name];
       return S ? Array.isArray(S) ? S : [S] : [];
     });
-    return (S, oe) => (n(), i("svg", {
+    return (S, oe) => (n(), r("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       width: d.size,
       height: d.size,
@@ -123,16 +123,16 @@ const _e = (d, j) => {
       class: M(["svg-icon", z.value]),
       "aria-hidden": "true"
     }, [
-      (n(!0), i(X, null, Q(r.value, (l, J) => (n(), i("path", {
+      (n(!0), r(X, null, Q(i.value, (l, J) => (n(), r("path", {
         key: J,
         d: l
       }, null, 8, Ke))), 128))
     ], 10, Ze));
   }
-}, h = /* @__PURE__ */ _e(We, [["__scopeId", "data-v-5461fefd"]]), Xe = { class: "modal-header" }, Qe = { class: "modal-title" }, Je = ["title"], Ye = { class: "toolbar" }, et = ["disabled", "title"], tt = ["title"], at = ["title"], lt = ["title"], st = { class: "path-breadcrumb" }, ot = ["onClick"], nt = { class: "breadcrumb-text" }, it = {
+}, h = /* @__PURE__ */ _e(We, [["__scopeId", "data-v-5461fefd"]]), Xe = { class: "modal-header" }, Qe = { class: "modal-title" }, Je = ["title"], Ye = { class: "toolbar" }, et = ["disabled", "title"], tt = ["title"], at = ["title"], lt = ["title"], st = { class: "path-breadcrumb" }, ot = ["onClick"], nt = { class: "breadcrumb-text" }, rt = {
   key: 0,
   class: "breadcrumb-sep"
-}, rt = { class: "search-bar" }, ct = ["placeholder"], dt = ["title"], ut = { class: "toggle-label" }, vt = ["title"], ht = { class: "status-text" }, ft = { class: "modal-body" }, mt = { class: "sidebar" }, pt = { class: "sidebar-section" }, bt = { class: "sidebar-title" }, kt = {
+}, it = { class: "search-bar" }, ct = ["placeholder"], dt = ["title"], ut = { class: "toggle-label" }, vt = ["title"], ht = { class: "status-text" }, ft = { class: "modal-body" }, mt = { class: "sidebar" }, pt = { class: "sidebar-section" }, bt = { class: "sidebar-title" }, kt = {
   key: 0,
   class: "sidebar-section"
 }, gt = { class: "sidebar-title" }, yt = ["onClick"], wt = {
@@ -191,8 +191,8 @@ const _e = (d, j) => {
     // 'zh-CN' | 'en-US'
     messages: { type: Object, default: null },
     // 外部完全覆盖字典（高级用法）
-    enableMkdir: { type: Boolean, default: !1 },
-    // 是否启用新建文件夹功能（需后端支持 POST /fs/mkdir）
+    enableMkdir: { type: Boolean, default: !0 },
+    // 是否显示"新建文件夹"按钮（自 v0.1.5 起由中间件内置，无需后端额外配置）
     autoSelectOnMkdir: { type: Boolean, default: !0 }
     // 创建成功后是否自动选中新文件夹
   },
@@ -319,24 +319,24 @@ const _e = (d, j) => {
         "mkdir.success": "Created: {name}",
         "mkdir.createdToast": "Folder created"
       }
-    }, r = d, S = j, oe = x(() => ({ ...z[r.locale] || z[we], ...r.messages || {} }));
+    }, i = d, S = j, oe = x(() => ({ ...z[i.locale] || z[we], ...i.messages || {} }));
     function l(t, e = {}) {
       let a = oe.value[t];
       return a == null && (a = z[we][t] ?? t), a.replace(/\{(\w+)\}/g, (c, w) => e[w] ?? `{${w}}`);
     }
-    const J = x(() => r.mode === "file" ? r.theme === "light" ? "#3b82f6" : "#6c8cff" : "#a78bfa"), Y = u(!1), A = u(""), p = u(""), E = u(null), ee = u([]), f = u([]), b = u(""), G = u([]), $ = u(""), _ = u(!1), O = u(!1), D = u([]), V = u(!1), U = u(0), te = u(""), k = u({ status: "idle", totalFiles: 0, indexedFiles: 0, currentDir: "", scannedRoots: [] });
+    const J = x(() => i.mode === "file" ? i.theme === "light" ? "#3b82f6" : "#6c8cff" : "#a78bfa"), Y = u(!1), A = u(""), p = u(""), E = u(null), ee = u([]), f = u([]), b = u(""), G = u([]), $ = u(""), _ = u(!1), O = u(!1), D = u([]), V = u(!1), U = u(0), te = u(""), k = u({ status: "idle", totalFiles: 0, indexedFiles: 0, currentDir: "", scannedRoots: [] });
     let T = null;
-    const N = u(!1), C = u(""), y = u(""), ae = u(""), P = u(!1), q = u(null), ne = x(() => $.value ? $.value + "\\Desktop" : ""), ie = x(() => $.value ? $.value + "\\Documents" : ""), re = x(() => $.value ? $.value + "\\Downloads" : ""), I = x(() => _.value && D.value.length > 0), ce = x(() => {
+    const N = u(!1), C = u(""), y = u(""), ae = u(""), P = u(!1), q = u(null), ne = x(() => $.value ? $.value + "\\Desktop" : ""), re = x(() => $.value ? $.value + "\\Documents" : ""), ie = x(() => $.value ? $.value + "\\Downloads" : ""), I = x(() => _.value && D.value.length > 0), ce = x(() => {
       if (!C.value.trim() || y.value) return "";
       const t = ee.value.some((e) => e.name.toLowerCase() === C.value.trim().toLowerCase());
       return l(t ? "mkdir.hintExists" : "mkdir.hintOk");
     }), de = x(() => {
       if (I.value) {
         let a = D.value;
-        return r.mode === "directory" && (a = a.filter((c) => c.kind === "directory")), a;
+        return i.mode === "directory" && (a = a.filter((c) => c.kind === "directory")), a;
       }
       let t = ee.value;
-      if (r.mode === "directory" && (t = t.filter((a) => a.kind === "directory")), !b.value) return t;
+      if (i.mode === "directory" && (t = t.filter((a) => a.kind === "directory")), !b.value) return t;
       const e = b.value.toLowerCase();
       return t.filter((a) => a.name.toLowerCase().includes(e));
     }), le = x(() => {
@@ -349,7 +349,7 @@ const _e = (d, j) => {
     });
     async function xe() {
       try {
-        const t = await fetch(`${r.apiBase}/fs/home`);
+        const t = await fetch(`${i.apiBase}/fs/home`);
         if (!t.ok) throw new Error(`HTTP ${t.status}`);
         const e = await t.json();
         return $.value = e.home, e.home;
@@ -359,7 +359,7 @@ const _e = (d, j) => {
     }
     async function Se() {
       try {
-        const t = await fetch(`${r.apiBase}/fs/drives`);
+        const t = await fetch(`${i.apiBase}/fs/drives`);
         if (!t.ok) throw new Error(`HTTP ${t.status}`);
         const e = await t.json();
         G.value = e.drives || [];
@@ -369,7 +369,7 @@ const _e = (d, j) => {
     }
     async function ue() {
       try {
-        const t = await fetch(`${r.apiBase}/fs/index-status`);
+        const t = await fetch(`${i.apiBase}/fs/index-status`);
         if (!t.ok) return;
         const e = await t.json();
         k.value = e;
@@ -381,7 +381,7 @@ const _e = (d, j) => {
       try {
         const e = new URLSearchParams();
         t && e.set("dir", t);
-        const a = await fetch(`${r.apiBase}/fs/list?${e}`);
+        const a = await fetch(`${i.apiBase}/fs/list?${e}`);
         if (!a.ok) {
           let w = `HTTP ${a.status}`;
           try {
@@ -424,7 +424,7 @@ const _e = (d, j) => {
       return f.value.includes(t);
     }
     function L(t) {
-      if (!r.multiple) {
+      if (!i.multiple) {
         f.value = f.value[0] === t ? [] : [t];
         return;
       }
@@ -435,14 +435,14 @@ const _e = (d, j) => {
       f.value = [];
     }
     function fe(t, e) {
-      t.kind === "directory" ? (r.mode, L(t.path)) : r.mode === "file" && L(t.path);
+      t.kind === "directory" ? (i.mode, L(t.path)) : i.mode === "file" && L(t.path);
     }
     function me(t) {
-      if (!r.multiple) {
+      if (!i.multiple) {
         fe(t);
         return;
       }
-      (t.kind === "directory" || r.mode === "file") && L(t.path);
+      (t.kind === "directory" || i.mode === "file") && L(t.path);
     }
     function Fe(t) {
       t.kind === "directory" && H(t.path);
@@ -479,9 +479,9 @@ const _e = (d, j) => {
       try {
         const e = new URLSearchParams({
           q: t,
-          mode: r.mode === "directory" ? "directory" : r.mode === "file" ? "file" : "all",
+          mode: i.mode === "directory" ? "directory" : i.mode === "file" ? "file" : "all",
           limit: "200"
-        }), a = await fetch(`${r.apiBase}/fs/search?${e}`, {
+        }), a = await fetch(`${i.apiBase}/fs/search?${e}`, {
           signal: T.signal
         });
         if (!a.ok) {
@@ -510,7 +510,7 @@ const _e = (d, j) => {
     }
     async function He() {
       try {
-        await fetch(`${r.apiBase}/fs/reindex`, { method: "POST" }), k.value = { ...k.value, status: "indexing" };
+        await fetch(`${i.apiBase}/fs/reindex`, { method: "POST" }), k.value = { ...k.value, status: "indexing" };
         const t = setInterval(async () => {
           await ue(), (k.value.status === "ready" || k.value.status === "error") && clearInterval(t);
         }, 2e3);
@@ -534,7 +534,7 @@ const _e = (d, j) => {
       if (!P.value) {
         P.value = !0, y.value = "";
         try {
-          const e = await fetch(`${r.apiBase}/fs/mkdir`, {
+          const e = await fetch(`${i.apiBase}/fs/mkdir`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ parent: p.value, name: t })
@@ -543,7 +543,7 @@ const _e = (d, j) => {
             y.value = a.error || `HTTP ${e.status}`;
             return;
           }
-          N.value = !1, C.value = "", y.value = "", S("created", { path: a.path, name: a.name, parent: p.value }), await R(p.value), r.autoSelectOnMkdir && a.path && (r.multiple ? f.value.includes(a.path) || f.value.push(a.path) : f.value = [a.path]);
+          N.value = !1, C.value = "", y.value = "", S("created", { path: a.path, name: a.name, parent: p.value }), await R(p.value), i.autoSelectOnMkdir && a.path && (i.multiple ? f.value.includes(a.path) || f.value.push(a.path) : f.value = [a.path]);
         } catch (e) {
           y.value = l("error.network", { message: e.message });
         } finally {
@@ -566,7 +566,7 @@ const _e = (d, j) => {
       const e = (t.ext || "").replace(".", "");
       return qe(e);
     }
-    return ke(() => r.visible, async (t) => {
+    return ke(() => i.visible, async (t) => {
       if (t) {
         f.value = [], b.value = "", A.value = "", N.value = !1, C.value = "", y.value = "", B();
         const e = await xe();
@@ -574,7 +574,7 @@ const _e = (d, j) => {
       } else
         B(), N.value = !1;
     }), (t, e) => (n(), Oe(Re, { to: "body" }, [
-      d.visible ? (n(), i("div", {
+      d.visible ? (n(), r("div", {
         key: 0,
         class: "modal-overlay",
         onClick: e[11] || (e[11] = F((a) => t.$emit("close"), ["self"]))
@@ -636,7 +636,7 @@ const _e = (d, j) => {
                 size: 14
               })
             ], 8, at),
-            d.enableMkdir && !I.value ? (n(), i("button", {
+            d.enableMkdir && !I.value ? (n(), r("button", {
               key: 0,
               class: "tool-btn",
               onClick: Be,
@@ -649,17 +649,17 @@ const _e = (d, j) => {
               g(" " + o(l("modal.newFolder")), 1)
             ], 8, lt)) : m("", !0),
             s("div", st, [
-              (n(!0), i(X, null, Q(le.value, (a, c) => (n(), i("span", {
+              (n(!0), r(X, null, Q(le.value, (a, c) => (n(), r("span", {
                 key: c,
                 class: "breadcrumb-item",
                 onClick: (w) => Me(c)
               }, [
                 s("span", nt, o(a.label), 1),
-                c < le.value.length - 1 ? (n(), i("span", it, "/")) : m("", !0)
+                c < le.value.length - 1 ? (n(), r("span", rt, "/")) : m("", !0)
               ], 8, ot))), 128))
             ])
           ]),
-          s("div", rt, [
+          s("div", it, [
             v(h, {
               name: "search",
               size: 16,
@@ -675,7 +675,7 @@ const _e = (d, j) => {
             }, null, 40, ct), [
               [ye, b.value]
             ]),
-            b.value ? (n(), i("button", {
+            b.value ? (n(), r("button", {
               key: 0,
               class: "clear-search",
               onClick: Te
@@ -697,7 +697,7 @@ const _e = (d, j) => {
                 s("span", { class: "toggle-knob" }, null, -1)
               ])], 2)
             ], 8, dt),
-            _.value ? (n(), i("div", {
+            _.value ? (n(), r("div", {
               key: 1,
               class: M(["index-status", k.value.status]),
               title: k.value.status === "ready" ? l("tooltip.indexReady", {
@@ -727,7 +727,7 @@ const _e = (d, j) => {
                   }),
                   g(" " + o(l("sidebar.home")), 1)
                 ]),
-                ne.value ? (n(), i("div", {
+                ne.value ? (n(), r("div", {
                   key: 0,
                   class: "sidebar-item",
                   onClick: e[3] || (e[3] = (a) => H(ne.value))
@@ -738,10 +738,10 @@ const _e = (d, j) => {
                   }),
                   g(" " + o(l("sidebar.desktop")), 1)
                 ])) : m("", !0),
-                ie.value ? (n(), i("div", {
+                re.value ? (n(), r("div", {
                   key: 1,
                   class: "sidebar-item",
-                  onClick: e[4] || (e[4] = (a) => H(ie.value))
+                  onClick: e[4] || (e[4] = (a) => H(re.value))
                 }, [
                   v(h, {
                     name: "file",
@@ -749,10 +749,10 @@ const _e = (d, j) => {
                   }),
                   g(" " + o(l("sidebar.documents")), 1)
                 ])) : m("", !0),
-                re.value ? (n(), i("div", {
+                ie.value ? (n(), r("div", {
                   key: 2,
                   class: "sidebar-item",
-                  onClick: e[5] || (e[5] = (a) => H(re.value))
+                  onClick: e[5] || (e[5] = (a) => H(ie.value))
                 }, [
                   v(h, {
                     name: "download",
@@ -761,9 +761,9 @@ const _e = (d, j) => {
                   g(" " + o(l("sidebar.downloads")), 1)
                 ])) : m("", !0)
               ]),
-              G.value.length ? (n(), i("div", kt, [
+              G.value.length ? (n(), r("div", kt, [
                 s("div", gt, o(l("sidebar.drives")), 1),
-                (n(!0), i(X, null, Q(G.value, (a) => (n(), i("div", {
+                (n(!0), r(X, null, Q(G.value, (a) => (n(), r("div", {
                   key: a,
                   class: M(["sidebar-item", { active: p.value === a }]),
                   onClick: (c) => H(a)
@@ -780,21 +780,21 @@ const _e = (d, j) => {
               class: "file-list-container",
               onClick: F(De, ["self"])
             }, [
-              Y.value ? (n(), i("div", wt, [
+              Y.value ? (n(), r("div", wt, [
                 e[14] || (e[14] = s("span", { class: "spinner" }, null, -1)),
                 g(" " + o(l("state.loading")), 1)
-              ])) : A.value ? (n(), i("div", _t, [
+              ])) : A.value ? (n(), r("div", _t, [
                 v(h, {
                   name: "circleX",
                   size: 18,
                   color: "currentColor"
                 }),
                 g(" " + o(A.value), 1)
-              ])) : O.value ? (n(), i("div", xt, [
+              ])) : O.value ? (n(), r("div", xt, [
                 e[15] || (e[15] = s("span", { class: "spinner" }, null, -1)),
                 g(" " + o(l("state.globalSearching")), 1)
-              ])) : de.value.length === 0 ? (n(), i("div", St, o(b.value ? l("state.emptySearch") : l("state.emptyDir")), 1)) : (n(), i("div", Ct, [
-                D.value.length > 0 ? (n(), i("div", Mt, [
+              ])) : de.value.length === 0 ? (n(), r("div", St, o(b.value ? l("state.emptySearch") : l("state.emptyDir")), 1)) : (n(), r("div", Ct, [
+                D.value.length > 0 ? (n(), r("div", Mt, [
                   v(h, {
                     name: "search",
                     size: 14,
@@ -803,13 +803,13 @@ const _e = (d, j) => {
                   s("span", {
                     innerHTML: l("results.found", { count: D.value.length })
                   }, null, 8, $t),
-                  V.value ? (n(), i("span", Dt, o(l("results.truncated")), 1)) : m("", !0),
+                  V.value ? (n(), r("span", Dt, o(l("results.truncated")), 1)) : m("", !0),
                   s("span", {
                     class: M(["engine-badge", te.value])
                   }, o(te.value === "index" ? l("search.engineIndex") : l("search.engineWalk")), 3),
                   s("span", Ft, o(U.value) + o(l("unit.ms")), 1)
                 ])) : m("", !0),
-                d.mode === "directory" && !I.value ? (n(), i("div", {
+                d.mode === "directory" && !I.value ? (n(), r("div", {
                   key: 1,
                   class: M(["file-row select-current-dir", { selected: he(p.value) }]),
                   onClick: [
@@ -827,7 +827,7 @@ const _e = (d, j) => {
                   s("span", zt, o(l("fileRow.selectCurrent")), 1),
                   s("span", Lt, o(p.value), 1)
                 ], 2)) : m("", !0),
-                (n(!0), i(X, null, Q(de.value, (a) => (n(), i("div", {
+                (n(!0), r(X, null, Q(de.value, (a) => (n(), r("div", {
                   key: a.path,
                   class: M(["file-row", {
                     selected: he(a.path),
@@ -850,17 +850,17 @@ const _e = (d, j) => {
                     class: "file-name",
                     title: a.name
                   }, o(a.name), 9, Pt),
-                  I.value ? (n(), i("span", {
+                  I.value ? (n(), r("span", {
                     key: 0,
                     class: "file-parent-path",
                     title: a.path
                   }, o(Ie(a.path)), 9, It)) : m("", !0),
-                  a.kind === "file" ? (n(), i("span", {
+                  a.kind === "file" ? (n(), r("span", {
                     key: 1,
                     class: "file-size",
                     title: be(a.size)
                   }, o(be(a.size)), 9, Ht)) : m("", !0),
-                  a.modified ? (n(), i("span", {
+                  a.modified ? (n(), r("span", {
                     key: 2,
                     class: "file-modified",
                     title: a.modified
@@ -871,11 +871,11 @@ const _e = (d, j) => {
           ]),
           s("div", jt, [
             s("div", At, [
-              f.value.length === 0 ? (n(), i("span", Nt, o(l(d.mode === "file" ? "footer.unselectedFile" : "footer.unselectedDir")), 1)) : d.multiple ? (n(), i("span", Rt, [
+              f.value.length === 0 ? (n(), r("span", Nt, o(l(d.mode === "file" ? "footer.unselectedFile" : "footer.unselectedDir")), 1)) : d.multiple ? (n(), r("span", Rt, [
                 s("span", {
                   innerHTML: l("footer.selected", { count: f.value.length })
                 }, null, 8, Et)
-              ])) : (n(), i("span", {
+              ])) : (n(), r("span", {
                 key: 1,
                 class: "has-selection single-path",
                 title: f.value[0]
@@ -893,7 +893,7 @@ const _e = (d, j) => {
               }, o(l("footer.confirm")), 9, Vt)
             ])
           ]),
-          N.value ? (n(), i("div", {
+          N.value ? (n(), r("div", {
             key: 0,
             class: "mkdir-overlay",
             onClick: F(K, ["self"]),
@@ -933,14 +933,14 @@ const _e = (d, j) => {
                 }, null, 42, Qt), [
                   [ye, C.value]
                 ]),
-                y.value ? (n(), i("div", Jt, [
+                y.value ? (n(), r("div", Jt, [
                   v(h, {
                     name: "circleX",
                     size: 14,
                     color: "currentColor"
                   }),
                   s("span", null, o(y.value), 1)
-                ])) : ce.value ? (n(), i("div", Yt, o(ce.value), 1)) : m("", !0)
+                ])) : ce.value ? (n(), r("div", Yt, o(ce.value), 1)) : m("", !0)
               ]),
               s("div", ea, [
                 s("button", {
@@ -953,7 +953,7 @@ const _e = (d, j) => {
                   disabled: !C.value.trim() || P.value,
                   onClick: pe
                 }, [
-                  P.value ? (n(), i("span", la)) : m("", !0),
+                  P.value ? (n(), r("span", la)) : m("", !0),
                   g(" " + o(l("mkdir.confirm")), 1)
                 ], 8, aa)
               ])
@@ -963,7 +963,7 @@ const _e = (d, j) => {
       ])) : m("", !0)
     ]));
   }
-}, na = /* @__PURE__ */ _e(sa, [["__scopeId", "data-v-88736e96"]]);
+}, na = /* @__PURE__ */ _e(sa, [["__scopeId", "data-v-6b779d4c"]]);
 export {
   na as FilePickerModal,
   h as SvgIcon,
