@@ -1,9 +1,9 @@
-# file-picker-node
+# local-file-picker
 
 基于 **Vue 3 + Express** 的本地文件 / 目录选择器，通过 Node.js 后端直接读取文件系统，**可获取绝对路径**。
 
-[![npm version](https://img.shields.io/npm/v/file-picker-node)](https://www.npmjs.com/package/file-picker-node)
-[![license](https://img.shields.io/npm/l/file-picker-node)](./LICENSE)
+[![npm version](https://img.shields.io/npm/v/local-file-picker)](https://www.npmjs.com/package/local-file-picker)
+[![license](https://img.shields.io/npm/l/local-file-picker)](./LICENSE)
 
 ## 功能特性
 
@@ -22,7 +22,7 @@
 ## 安装
 
 ```bash
-npm install file-picker-node
+npm install local-file-picker
 ```
 
 ---
@@ -37,7 +37,7 @@ npm install file-picker-node
 // server.js
 import express from 'express';
 import cors from 'cors';
-import { createFilePickerMiddleware } from 'file-picker-node';
+import { createFilePickerMiddleware } from 'local-file-picker';
 
 const app = express();
 app.use(cors());
@@ -72,8 +72,8 @@ app.use('/api', createFilePickerMiddleware({
 
 ```js
 // main.js 或按需引入
-import { FilePickerModal } from 'file-picker-node/client';
-import 'file-picker-node/dist/file-picker.css'; // 引入样式
+import { FilePickerModal } from 'local-file-picker/client';
+import 'local-file-picker/dist/file-picker.css'; // 引入样式
 ```
 
 #### 组件用法
@@ -93,8 +93,8 @@ import 'file-picker-node/dist/file-picker.css'; // 引入样式
 
 <script setup>
 import { ref } from 'vue';
-import { FilePickerModal } from 'file-picker-node/client';
-import 'file-picker-node/dist/file-picker.css';
+import { FilePickerModal } from 'local-file-picker/client';
+import 'local-file-picker/dist/file-picker.css';
 
 const open = ref(false);
 
@@ -150,8 +150,8 @@ function onConfirm(paths) {
 ## 本地开发 Demo
 
 ```bash
-git clone https://github.com/xuze/file-picker-node.git
-cd file-picker-node
+git clone https://github.com/xz333221/local-file-picker.git
+cd local-file-picker
 npm install
 npm run dev:server   # 后端 http://localhost:8642
 npm run dev:client   # 前端 http://localhost:7891
