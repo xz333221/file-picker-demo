@@ -17,6 +17,16 @@
 
 > 适用于本地工具、内部后台、Electron 应用等场景，**不适合部署到公网**（服务端直接读取宿主机文件系统）。
 
+## 预览
+
+**Demo 控制台**（9 个 prop 实时切换 + 说明文案 + 完整 API 参考表）：
+
+![Demo 控制台](https://raw.githubusercontent.com/xz333221/file-picker-demo/main/docs/screenshots/demo-home.png)
+
+**弹窗打开态**（选文件夹 + 暗色主题 + 启用新建文件夹）：
+
+![弹窗打开态](https://raw.githubusercontent.com/xz333221/file-picker-demo/main/docs/screenshots/demo-modal.png)
+
 ---
 
 ## 安装
