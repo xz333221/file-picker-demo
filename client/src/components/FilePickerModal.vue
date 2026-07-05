@@ -15,34 +15,50 @@
 
         <!-- 工具栏 -->
         <div class="toolbar">
-          <button class="tool-btn" @click="goUp" :disabled="!parentPath" :title="t('tooltip.back')">
-            <SvgIcon name="arrowUp" :size="14" /> {{ t('modal.up') }}
+          <button class="tool-btn tool-btn-icon" @click="goUp" :disabled="!parentPath" :title="t('tooltip.back')">
+            <SvgIcon name="arrowUp" :size="14" />
           </button>
-          <button class="tool-btn" @click="goHome" :title="t('tooltip.home')">
-            <SvgIcon name="home" :size="14" /> {{ t('modal.home') }}
+          <button class="tool-btn tool-btn-icon" @click="goHome" :title="t('tooltip.home')">
+            <SvgIcon name="home" :size="14" />
           </button>
-          <button class="tool-btn" @click="refresh" :title="t('tooltip.refresh')">
+          <button class="tool-btn tool-btn-icon" @click="refresh" :title="t('tooltip.refresh')">
             <SvgIcon name="refresh" :size="14" />
           </button>
+        <button
+          v-if="enableMkdir && !isGlobalSearchActive"
+          class="tool-btn tool-btn-icon"
+          @click="openMkdirDialog"
+          :title="t('tooltip.newFolder')"
+        >
+          <SvgIcon name="folderPlus" :size="14" />
+        </button>
+        <div class="address-bar" :class="{ 'has-error': addressBarError }">
+          <SvgIcon name="folder" :size="13" :color="addressBarError ? '#f87171' : '#8b91a8'" class="address-bar-icon" />
+          <input
+            ref="addressInputRef"
+            v-model="addressBarValue"
+            type="text"
+            class="address-bar-input"
+            :placeholder="t('address.placeholder')"
+            :title="addressBarError || t('address.title')"
+            spellcheck="false"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            @keydown.enter="onAddressEnter"
+            @keydown.esc="onAddressEscape"
+            @focus="onAddressFocus"
+            @blur="onAddressBlur"
+          />
           <button
-            v-if="enableMkdir && !isGlobalSearchActive"
-            class="tool-btn"
-            @click="openMkdirDialog"
-            :title="t('tooltip.newFolder')"
+            v-if="addressBarError"
+            class="address-bar-clear"
+            :title="addressBarError"
+            @click="clearAddressError"
           >
-            <SvgIcon name="folderPlus" :size="14" /> {{ t('modal.newFolder') }}
+            <SvgIcon name="circleX" :size="14" color="#f87171" />
           </button>
-          <div class="path-breadcrumb">
-            <span
-              v-for="(segment, i) in pathSegments"
-              :key="i"
-              class="breadcrumb-item"
-              @click="navigateToSegment(i)"
-            >
-              <span class="breadcrumb-text">{{ segment.label }}</span>
-              <span v-if="i < pathSegments.length - 1" class="breadcrumb-sep">/</span>
-            </span>
-          </div>
+      </div>
         </div>
 
         <!-- 搜索栏 -->
@@ -344,6 +360,11 @@ const MESSAGES = {
     'error.cannotConnect': '无法连接到后端服务，请确认后端已启动 (npm run dev)',
     'error.network': '网络错误: {message}。请确认后端服务已启动。',
     'error.searchFailed': '搜索请求失败',
+    'address.title': '输入目录路径后按回车跳转（支持相对路径，如 ..\\foo）',
+    'address.placeholder': '输入目录路径后按回车跳转…',
+    'address.errorEmpty': '请输入路径',
+    'address.errorInvalid': '无法访问该目录: {path}',
+    'address.errorInvalidDefault': 'defaultPath 指定的目录无效或不可访问，已回落到用户目录',
     'mkdir.title': '新建文件夹',
     'mkdir.parentLabel': '位置',
     'mkdir.nameLabel': '文件夹名',
@@ -404,6 +425,11 @@ const MESSAGES = {
     'error.cannotConnect': 'Cannot connect to backend service, please make sure it is started (npm run dev)',
     'error.network': 'Network error: {message}. Please make sure the backend service is running.',
     'error.searchFailed': 'Search request failed',
+    'address.title': 'Type a directory path and press Enter to navigate (relative paths like ..\\foo are supported)',
+    'address.placeholder': 'Type a directory path and press Enter…',
+    'address.errorEmpty': 'Please enter a path',
+    'address.errorInvalid': 'Cannot access directory: {path}',
+    'address.errorInvalidDefault': 'The defaultPath directory is invalid or inaccessible, fell back to user home',
     'mkdir.title': 'New Folder',
     'mkdir.parentLabel': 'Location',
     'mkdir.nameLabel': 'Folder name',
@@ -423,6 +449,7 @@ const props = defineProps({
   mode: { type: String, default: 'file' }, // 'file' | 'directory'
   multiple: { type: Boolean, default: false }, // 是否允许多选，默认单选
   theme: { type: String, default: 'dark' }, // 'dark' | 'light'
+  defaultPath: { type: String, default: '' }, // 打开弹窗时的默认目录，空则使用客户端用户目录
   apiBase: { type: String, default: '/api' }, // API 服务基础路径，如 'http://localhost:8642/api'
   locale: { type: String, default: 'zh-CN' }, // 'zh-CN' | 'en-US'
   messages: { type: Object, default: null }, // 外部完全覆盖字典（高级用法）
@@ -477,6 +504,12 @@ const mkdirError = ref('');
 const mkdirParent = ref('');
 const mkdirSubmitting = ref(false);
 const mkdirNameInput = ref(null);
+
+// ===== Address bar (path input) =====
+const addressBarValue = ref('');
+const addressBarError = ref('');
+const addressInputRef = ref(null);
+let addressBarEditing = false;
 
 // 快捷路径
 const desktopPath = computed(() => homePath.value ? homePath.value + '\\Desktop' : '');
@@ -632,6 +665,141 @@ function navigateToSegment(index) {
     navigateTo(targetPath);
   }
 }
+
+// ===== Address bar handlers =====
+// 把用户输入解析成绝对路径（Windows / POSIX）
+function resolveAddressPath(input, base) {
+  if (!input) return base || '';
+  let trimmed = String(input).trim();
+  if (!trimmed) return base || '';
+
+  // 推断平台：以当前路径的格式为准；都没有就按浏览器平台回退
+  const looksWindows =
+    (base || '').includes('\\') ||
+    /^[A-Za-z]:[\\\/]/.test(base || '') ||
+    /^[A-Za-z]:[\\\/]/.test(trimmed) ||
+    trimmed.startsWith('\\\\') ||
+    (typeof navigator !== 'undefined' && /Win/i.test(navigator.platform || ''));
+
+  if (looksWindows) {
+    // 绝对路径：盘符开头
+    if (/^[A-Za-z]:/.test(trimmed)) {
+      let normalized = trimmed.replace(/\//g, '\\');
+      // 形如 "C:" 补成 "C:\"
+      if (/^[A-Za-z]:\\?$/.test(normalized)) normalized = normalized.replace(/\\?$/, '\\');
+      return normalized;
+    }
+    // UNC 路径原样保留
+    if (trimmed.startsWith('\\\\')) return trimmed.replace(/\//g, '\\');
+    // 当前盘根
+    if (trimmed === '\\' && /^[A-Za-z]:/.test(base || '')) {
+      return (base || '').split('\\')[0] + '\\';
+    }
+    // 相对路径：基于 base 解析
+    if (!base) return trimmed;
+    const baseParts = base.split('\\');
+    const inputParts = trimmed.split(/[\\\/]/).filter(Boolean);
+    const result = [...baseParts];
+    for (const part of inputParts) {
+      if (!part || part === '.') continue;
+      if (part === '..') {
+        if (result.length > 1) result.pop(); // 保留盘符
+      } else {
+        result.push(part);
+      }
+    }
+    return result.join('\\');
+  }
+
+  // POSIX
+  if (trimmed.startsWith('/')) {
+    let normalized = trimmed.replace(/\\/g, '/');
+    // 把连续的 / 折叠
+    return normalized.replace(/\/+/g, '/');
+  }
+  if (!base) return trimmed;
+  const baseParts = base.split('/').filter(Boolean);
+  const inputParts = trimmed.split(/[\\\/]/).filter(Boolean);
+  const result = [...baseParts];
+  for (const part of inputParts) {
+    if (!part || part === '.') continue;
+    if (part === '..') {
+      if (result.length > 0) result.pop();
+    } else {
+      result.push(part);
+    }
+  }
+  return '/' + result.join('/');
+}
+
+async function navigateByAddress() {
+  const raw = addressBarValue.value.trim();
+  if (!raw) {
+    addressBarError.value = t('address.errorEmpty');
+    return;
+  }
+  const resolved = resolveAddressPath(raw, currentPath.value);
+  error.value = '';
+  addressBarError.value = '';
+  try {
+    const resp = await fetch(
+      `${props.apiBase}/fs/list?dir=${encodeURIComponent(resolved)}`,
+    );
+    if (!resp.ok) {
+      let detail = '';
+      try {
+        const data = await resp.json();
+        detail = data && data.error ? data.error : '';
+      } catch (_) { /* ignore */ }
+      addressBarError.value = detail || t('address.errorInvalid', { path: resolved });
+      return;
+    }
+    addressBarValue.value = resolved;
+    await navigateTo(resolved);
+  } catch (err) {
+    addressBarError.value = t('error.network', { message: err.message });
+  }
+}
+
+function onAddressEnter() {
+  navigateByAddress();
+}
+
+function onAddressEscape() {
+  addressBarValue.value = currentPath.value || '';
+  addressBarError.value = '';
+  if (addressInputRef.value && typeof addressInputRef.value.blur === 'function') {
+    addressInputRef.value.blur();
+  }
+}
+
+function onAddressFocus() {
+  addressBarEditing = true;
+  nextTick(() => {
+    if (addressInputRef.value && typeof addressInputRef.value.select === 'function') {
+      addressInputRef.value.select();
+    }
+  });
+}
+
+function onAddressBlur() {
+  addressBarEditing = false;
+  if (!addressBarError.value) {
+    addressBarValue.value = currentPath.value || '';
+  }
+}
+
+function clearAddressError() {
+  addressBarError.value = '';
+}
+
+watch(currentPath, (val) => {
+  if (!addressBarEditing) {
+    addressBarValue.value = val || '';
+  }
+  // 路径变更后清掉错误
+  if (addressBarError.value) addressBarError.value = '';
+});
 
 function refresh() {
   if (isGlobalSearchActive.value && searchQuery.value) {
@@ -929,7 +1097,27 @@ watch(() => props.visible, async (val) => {
     const home = await fetchHome();
     await fetchDrives();
     await fetchIndexStatus();
-    await fetchDirectory(home || '');
+    // 优先使用 defaultPath；如果不可访问则回落 home 并提示
+    let initial = '';
+    const requested = (props.defaultPath || '').trim();
+    if (requested) {
+      const resolved = resolveAddressPath(requested, home || '');
+      try {
+        const resp = await fetch(
+          `${props.apiBase}/fs/list?dir=${encodeURIComponent(resolved)}`,
+        );
+        if (resp.ok) {
+          initial = resolved;
+        } else {
+          error.value = t('address.errorInvalidDefault');
+        }
+      } catch (_) {
+        error.value = t('address.errorInvalidDefault');
+      }
+    }
+    if (!initial) initial = home || '';
+    addressBarValue.value = initial;
+    await fetchDirectory(initial);
   } else {
     exitGlobalSearch();
     mkdirDialogOpen.value = false;
@@ -1031,36 +1219,66 @@ watch(() => props.visible, async (val) => {
   opacity: 0.4;
   cursor: not-allowed;
 }
-
-.path-breadcrumb {
-  flex: 1;
-  display: flex;
-  align-items: center;
+.tool-btn-icon {
+  padding: 5px 8px;
   gap: 0;
-  overflow-x: auto;
-  margin-left: 8px;
-  font-size: 0.84rem;
-  color: #8b91a8;
+  justify-content: center;
 }
 
-.breadcrumb-item {
+
+/* Address bar (editable path input) */
+.address-bar {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  background: #2d3348;
+  border: 1px solid #3a4160;
+  border-radius: 6px;
+  padding: 2px 8px;
+  transition: border-color 0.15s;
+}
+.address-bar:focus-within {
+  border-color: #6c8cff;
+}
+.address-bar.has-error {
+  border-color: #f87171;
+}
+.address-bar-icon {
+  flex-shrink: 0;
+}
+.address-bar-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e4e7ef;
+  font-size: 0.84rem;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  padding: 4px 0;
+  line-height: 1.3;
+}
+.address-bar-input::placeholder {
+  color: #5a6180;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.address-bar-clear {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #f87171;
   cursor: pointer;
-  white-space: nowrap;
-}
-.breadcrumb-text {
-  padding: 2px 4px;
+  padding: 2px;
   border-radius: 3px;
-  transition: all 0.15s;
 }
-.breadcrumb-item:hover .breadcrumb-text {
-  background: rgba(108, 140, 255, 0.15);
-  color: #6c8cff;
-}
-.breadcrumb-sep {
-  margin: 0 2px;
-  color: #4a5178;
+.address-bar-clear:hover {
+  background: rgba(248, 113, 113, 0.12);
 }
 
 /* 搜索栏 */
@@ -1618,15 +1836,27 @@ watch(() => props.visible, async (val) => {
 .modal-theme-light .tool-btn:hover:not(:disabled) {
   background: #cbd5e1;
 }
-.modal-theme-light .path-breadcrumb {
-  color: #64748b;
+.modal-theme-light .address-bar {
+  background: #ffffff;
+  border-color: #cbd5e1;
 }
-.modal-theme-light .breadcrumb-item:hover .breadcrumb-text {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+.modal-theme-light .address-bar:focus-within {
+  border-color: #3b82f6;
 }
-.modal-theme-light .breadcrumb-sep {
-  color: #cbd5e1;
+.modal-theme-light .address-bar.has-error {
+  border-color: #ef4444;
+}
+.modal-theme-light .address-bar-input {
+  color: #1e293b;
+}
+.modal-theme-light .address-bar-input::placeholder {
+  color: #94a3b8;
+}
+.modal-theme-light .address-bar-clear {
+  color: #ef4444;
+}
+.modal-theme-light .address-bar-clear:hover {
+  background: rgba(239, 68, 68, 0.08);
 }
 .modal-theme-light .search-bar {
   background: #f1f5f9;

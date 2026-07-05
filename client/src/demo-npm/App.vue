@@ -133,6 +133,38 @@
           <div class="prop-desc">后端 API 基础路径，跨域时填完整 URL 如 <code>http://localhost:8642/api</code>，默认 <code>'/api'</code></div>
         </div>
 
+        <!-- defaultPath -->
+        <div class="control">
+          <label class="control-label">
+            <span class="prop-name">defaultPath</span>
+            <span class="prop-type">String</span>
+            <span class="prop-tag">新增</span>
+          </label>
+          <input
+            type="text"
+            class="text-input"
+            v-model="props.defaultPath"
+            placeholder="例如 C:\\Users\\xuze\\Documents 或留空"
+          />
+          <div class="prop-desc">打开弹窗时的默认目录。留空则使用用户主目录；不可访问时回落主目录并提示。</div>
+        </div>
+
+        <!-- defaultPath -->
+        <div class="control">
+          <label class="control-label">
+            <span class="prop-name">defaultPath</span>
+            <span class="prop-type">String</span>
+            <span class="prop-tag">新增</span>
+          </label>
+          <input
+            type="text"
+            class="text-input"
+            v-model="props.defaultPath"
+            placeholder="例如 C:\\Users\\xuze\\Documents 或留空"
+          />
+          <div class="prop-desc">打开弹窗时的默认目录。留空则使用用户主目录；不可访问时回落主目录并提示。</div>
+        </div>
+
         <!-- messages (advanced) -->
         <div class="control wide">
           <label class="control-label">
@@ -212,6 +244,7 @@
           <tr><td><code>messages</code></td><td>Object</td><td><code>null</code></td><td>外部完全覆盖 i18n 字典（高级用法）</td></tr>
           <tr><td><code>enableMkdir</code></td><td>Boolean</td><td><code>true</code></td><td>显示「新建文件夹」按钮（v0.1.5+ 中间件内置）</td></tr>
           <tr><td><code>autoSelectOnMkdir</code></td><td>Boolean</td><td><code>true</code></td><td>新建文件夹后自动选中新文件夹</td></tr>
+          <tr><td><code>defaultPath</code></td><td>String</td><td><code>''</code></td><td>打开弹窗时的默认目录，留空则使用用户主目录；不可访问时回落主目录并提示</td></tr>
         </tbody>
       </table>
 
@@ -250,6 +283,7 @@ const props = reactive({
   locale: 'zh-CN',
   enableMkdir: true,
   autoSelectOnMkdir: true,
+  defaultPath: '',
 });
 
 const messagesRaw = ref('');
@@ -276,6 +310,7 @@ const activeProps = computed(() => {
     locale: props.locale,
     enableMkdir: props.enableMkdir,
     autoSelectOnMkdir: props.autoSelectOnMkdir,
+    defaultPath: props.defaultPath,
   };
   // 解析 messages JSON
   const trimmed = messagesRaw.value.trim();
@@ -293,6 +328,7 @@ function resetProps() {
   props.locale = 'zh-CN';
   props.enableMkdir = true;
   props.autoSelectOnMkdir = true;
+  props.defaultPath = '';
   messagesRaw.value = '';
 }
 

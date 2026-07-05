@@ -13,6 +13,8 @@
 - 📍 **面包屑导航** — 路径导航，支持快捷访问家目录、桌面、文档等
 - 💾 **盘符列表** — Windows 多盘符支持
 - ✅ **多选** — Ctrl/Cmd + 点击多选
+- **默认目录** —— 通过 defaultPath prop 传入默认目录，打开弹窗直接定位
+- **地址栏跳转** —— 弹窗顶部可直接输入目录路径回车跳转，支持绝对路径、相对路径、盘符跳转
 - ⚡ **SQLite 索引** — 后台建立文件索引，全局搜索毫秒级响应
 
 > 适用于本地工具、内部后台、Electron 应用等场景，**不适合部署到公网**（服务端直接读取宿主机文件系统）。
@@ -126,6 +128,7 @@ function onConfirm(paths) {
 | `enable-mkdir` | `Boolean` | `false` | 是否启用弹窗内"新建文件夹"功能（需要后端中间件支持 `POST /fs/mkdir`） |
 | `auto-select-on-mkdir` | `Boolean` | `true` | 创建成功后自动选中新文件夹               |
 | `multiple` | `Boolean` | `false` | 是否允许多选                                |
+| `defaultPath` | `String` | ``""`` | 打开弹窗时的默认目录（绝对路径或相对路径如 `..\\foo`）。留空则使用用户主目录；不可访问时回落主目录并提示 |
 | `theme`    | `String`  | `'dark'` | `'dark'` / `'light'`                       |
 | `locale`   | `String`  | `'zh-CN'` | `'zh-CN'` / `'en-US'`                     |
 | `messages` | `Object`  | `null`  | 外部完全覆盖 i18n 字典（高级用法）           |

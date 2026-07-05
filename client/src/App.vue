@@ -84,10 +84,26 @@
     </section>
 
     <!-- 弹窗 -->
+    <section class="panel">
+      <h3 class="panel-title">defaultPath 演示</h3>
+      <p class="panel-hint">输入一个目录路径（绝对路径或相对于用户主目录），打开弹窗时会自动跳转到该目录。弹窗顶部的地址栏支持直接输入路径后回车跳转。</p>
+      <div class="default-path-row">
+        <input
+          v-model="defaultPath"
+          type="text"
+          class="default-path-input"
+          placeholder="例如 C:\Users\xuze\Documents 或留空使用主目录"
+        />
+        <button class="btn btn-primary" @click="openPicker(modalMode)">使用该路径打开</button>
+        <button class="btn btn-ghost" @click="defaultPath = ''">清空</button>
+      </div>
+    </section>
+
     <FilePickerModal
       :visible="modalVisible"
       :mode="modalMode"
       :enable-mkdir="true"
+      :default-path="defaultPath"
       @close="modalVisible = false"
       @confirm="handleConfirm"
       @created="handleCreated"
@@ -102,6 +118,7 @@ import FilePickerModal from './components/FilePickerModal.vue';
 
 const modalVisible = ref(false);
 const modalMode = ref('file');
+const defaultPath = ref('');
 const results = ref([]);
 const createdFolders = ref([]);
 
@@ -352,5 +369,55 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 24px;
+}
+.panel-title {
+  font-size: 1rem;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.panel-hint {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.default-path-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.default-path-input {
+  flex: 1;
+  min-width: 240px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.default-path-input:focus {
+  border-color: var(--primary);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--text-dim);
 }
 </style>
