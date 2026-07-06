@@ -174,20 +174,6 @@
                 <span class="elapsed-hint">{{ globalSearchElapsed }}{{ t('unit.ms') }}</span>
               </div>
 
-              <!-- 文件夹模式：选中当前目录的选项（仅非全局搜索时显示） -->
-              <div
-                v-if="mode === 'directory' && !isGlobalSearchActive"
-                class="file-row select-current-dir"
-                :class="{ selected: isSelected(currentPath) }"
-                @click.exact="toggleSelect(currentPath)"
-                @click.ctrl="toggleSelect(currentPath)"
-                @click.meta="toggleSelect(currentPath)"
-              >
-                <SvgIcon name="circleCheck" :size="18" color="#a78bfa" class="file-icon" />
-                <span class="file-name">{{ t('fileRow.selectCurrent') }}</span>
-                <span class="file-path-hint">{{ currentPath }}</span>
-              </div>
-
               <!-- 列表项 -->
               <div
                 v-for="item in filteredItems"
@@ -799,6 +785,10 @@ watch(currentPath, (val) => {
   }
   // 路径变更后清掉错误
   if (addressBarError.value) addressBarError.value = '';
+  // 文件夹模式：切换目录时默认选中当前文件夹，使确认按钮始终可点
+  if (props.mode === 'directory' && val && !isGlobalSearchActive.value) {
+    selectedPaths.value = [val];
+  }
 });
 
 function refresh() {
@@ -830,7 +820,12 @@ function toggleSelect(path) {
 }
 
 function clearSelection() {
-  selectedPaths.value = [];
+  // 文件夹模式下点击空白区域时重置为默认选中当前文件夹，而非完全清空
+  if (props.mode === 'directory' && currentPath.value && !isGlobalSearchActive.value) {
+    selectedPaths.value = [currentPath.value];
+  } else {
+    selectedPaths.value = [];
+  }
 }
 
 function handleClick(item, event) {

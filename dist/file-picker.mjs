@@ -1,4 +1,4 @@
-import { computed as S, openBlock as r, createElementBlock as n, normalizeClass as x, Fragment as he, renderList as me, ref as d, watch as ue, createBlock as tt, Teleport as at, withModifiers as I, createElementVNode as s, createVNode as v, createTextVNode as $, toDisplayString as o, createCommentVNode as k, withDirectives as fe, withKeys as U, vModelText as ve, nextTick as Fe } from "vue";
+import { computed as x, openBlock as r, createElementBlock as n, normalizeClass as $, Fragment as he, renderList as me, ref as d, watch as ue, createBlock as tt, Teleport as at, withModifiers as V, createElementVNode as s, createVNode as h, createTextVNode as M, toDisplayString as o, createCommentVNode as p, withDirectives as fe, withKeys as G, vModelText as ve, nextTick as De } from "vue";
 const lt = {
   // 导航/操作
   arrowUp: ["M12 19V5m-7 7 7-7 7 7"],
@@ -92,11 +92,11 @@ const lt = {
 function rt(u) {
   return st[u] || ot;
 }
-const Ie = (u, V) => {
-  const B = u.__vccOpts || u;
-  for (const [i, C] of V)
-    B[i] = C;
-  return B;
+const Pe = (u, N) => {
+  const I = u.__vccOpts || u;
+  for (const [i, S] of N)
+    I[i] = S;
+  return I;
 }, nt = ["width", "height", "stroke"], it = ["d"], ct = {
   __name: "SvgIcon",
   props: {
@@ -106,11 +106,11 @@ const Ie = (u, V) => {
     class: { type: String, default: "" }
   },
   setup(u) {
-    const V = u, B = S(() => V.class), i = S(() => {
-      const C = lt[V.name];
-      return C ? Array.isArray(C) ? C : [C] : [];
+    const N = u, I = x(() => N.class), i = x(() => {
+      const S = lt[N.name];
+      return S ? Array.isArray(S) ? S : [S] : [];
     });
-    return (C, pe) => (r(), n("svg", {
+    return (S, pe) => (r(), n("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       width: u.size,
       height: u.size,
@@ -120,7 +120,7 @@ const Ie = (u, V) => {
       "stroke-width": "2",
       "stroke-linecap": "round",
       "stroke-linejoin": "round",
-      class: x(["svg-icon", B.value]),
+      class: $(["svg-icon", I.value]),
       "aria-hidden": "true"
     }, [
       (r(!0), n(he, null, me(i.value, (l, se) => (r(), n("path", {
@@ -129,7 +129,7 @@ const Ie = (u, V) => {
       }, null, 8, it))), 128))
     ], 10, nt));
   }
-}, h = /* @__PURE__ */ Ie(ct, [["__scopeId", "data-v-5461fefd"]]), dt = { class: "modal-header" }, ut = { class: "modal-title" }, ft = ["title"], vt = { class: "toolbar" }, ht = ["disabled", "title"], mt = ["title"], pt = ["title"], kt = ["title"], bt = ["placeholder", "title"], gt = ["title"], yt = { class: "search-bar" }, wt = ["placeholder"], _t = ["title"], xt = { class: "toggle-label" }, St = ["title"], Ct = { class: "status-text" }, Mt = { class: "modal-body" }, $t = { class: "sidebar" }, zt = { class: "sidebar-section" }, Dt = { class: "sidebar-title" }, Ft = {
+}, m = /* @__PURE__ */ Pe(ct, [["__scopeId", "data-v-5461fefd"]]), dt = { class: "modal-header" }, ut = { class: "modal-title" }, ft = ["title"], vt = { class: "toolbar" }, ht = ["disabled", "title"], mt = ["title"], pt = ["title"], kt = ["title"], bt = ["placeholder", "title"], gt = ["title"], yt = { class: "search-bar" }, wt = ["placeholder"], _t = ["title"], xt = { class: "toggle-label" }, St = ["title"], Ct = { class: "status-text" }, Mt = { class: "modal-body" }, $t = { class: "sidebar" }, zt = { class: "sidebar-section" }, Dt = { class: "sidebar-title" }, Ft = {
   key: 0,
   class: "sidebar-section"
 }, Pt = { class: "sidebar-title" }, It = ["onClick"], Bt = {
@@ -150,29 +150,29 @@ const Ie = (u, V) => {
 }, Ht = {
   key: 0,
   class: "search-results-info"
-}, Rt = ["innerHTML"], jt = {
+}, jt = ["innerHTML"], Rt = {
   key: 0,
   class: "truncated-hint"
-}, Nt = { class: "elapsed-hint" }, Ot = { class: "file-name" }, Vt = { class: "file-path-hint" }, Gt = ["onClick", "onDblclick"], Ut = ["title"], Zt = ["title"], Wt = ["title"], qt = ["title"], Kt = { class: "modal-footer" }, Xt = { class: "selected-info" }, Qt = {
+}, Nt = { class: "elapsed-hint" }, Ot = ["onClick", "onDblclick"], Vt = ["title"], Gt = ["title"], Ut = ["title"], Zt = ["title"], Wt = { class: "modal-footer" }, qt = { class: "selected-info" }, Kt = {
   key: 0,
   class: "no-selection"
-}, Jt = ["title"], Yt = {
+}, Xt = ["title"], Qt = {
   key: 2,
   class: "has-selection"
-}, ea = ["innerHTML"], ta = { class: "footer-actions" }, aa = ["disabled"], la = { class: "mkdir-header" }, sa = { class: "mkdir-title" }, oa = { class: "mkdir-body" }, ra = { class: "mkdir-label" }, na = ["title"], ia = {
+}, Jt = ["innerHTML"], Yt = { class: "footer-actions" }, ea = ["disabled"], ta = { class: "mkdir-header" }, aa = { class: "mkdir-title" }, la = { class: "mkdir-body" }, sa = { class: "mkdir-label" }, oa = ["title"], ra = {
   class: "mkdir-label",
   for: "mkdir-name-input"
-}, ca = ["placeholder"], da = {
+}, na = ["placeholder"], ia = {
   key: 0,
   class: "mkdir-error"
-}, ua = {
+}, ca = {
   key: 1,
   class: "mkdir-hint"
-}, fa = { class: "mkdir-footer" }, va = ["disabled"], ha = ["disabled"], ma = {
+}, da = { class: "mkdir-footer" }, ua = ["disabled"], fa = ["disabled"], va = {
   key: 0,
   class: "spinner",
   style: { width: "12px", height: "12px", "border-width": "2px", "margin-right": "6px" }
-}, Pe = "zh-CN", pa = {
+}, Fe = "zh-CN", ha = {
   __name: "FilePickerModal",
   props: {
     visible: { type: Boolean, default: !1 },
@@ -196,8 +196,8 @@ const Ie = (u, V) => {
     // 创建成功后是否自动选中新文件夹
   },
   emits: ["close", "confirm", "created"],
-  setup(u, { emit: V }) {
-    const B = {
+  setup(u, { emit: N }) {
+    const I = {
       "zh-CN": {
         "modal.title.file": "选择文件",
         "modal.title.directory": "选择文件夹",
@@ -328,21 +328,21 @@ const Ie = (u, V) => {
         "mkdir.success": "Created: {name}",
         "mkdir.createdToast": "Folder created"
       }
-    }, i = u, C = V, pe = S(() => ({ ...B[i.locale] || B[Pe], ...i.messages || {} }));
+    }, i = u, S = N, pe = x(() => ({ ...I[i.locale] || I[Fe], ...i.messages || {} }));
     function l(a, e = {}) {
       let t = pe.value[a];
-      return t == null && (t = B[Pe][a] ?? a), t.replace(/\{(\w+)\}/g, (c, f) => e[f] ?? `{${f}}`);
+      return t == null && (t = I[Fe][a] ?? a), t.replace(/\{(\w+)\}/g, (c, f) => e[f] ?? `{${f}}`);
     }
-    const se = S(() => i.mode === "file" ? i.theme === "light" ? "#3b82f6" : "#6c8cff" : "#a78bfa"), oe = d(!1), z = d(""), m = d(""), K = d(null), re = d([]), p = d([]), b = d(""), X = d([]), D = d(""), _ = d(!1), Z = d(!1), F = d([]), Q = d(!1), J = d(0), ne = d(""), g = d({ status: "idle", totalFiles: 0, indexedFiles: 0, currentDir: "", scannedRoots: [] });
-    let L = null;
-    const G = d(!1), M = d(""), w = d(""), ie = d(""), E = d(!1), Y = d(null), T = d(""), y = d(""), H = d(null);
+    const se = x(() => i.mode === "file" ? i.theme === "light" ? "#3b82f6" : "#6c8cff" : "#a78bfa"), oe = d(!1), z = d(""), k = d(""), K = d(null), re = d([]), v = d([]), b = d(""), X = d([]), D = d(""), _ = d(!1), U = d(!1), F = d([]), Q = d(!1), J = d(0), ne = d(""), g = d({ status: "idle", totalFiles: 0, indexedFiles: 0, currentDir: "", scannedRoots: [] });
+    let A = null;
+    const O = d(!1), C = d(""), w = d(""), ie = d(""), L = d(!1), Y = d(null), B = d(""), y = d(""), E = d(null);
     let ce = !1;
-    const ke = S(() => D.value ? D.value + "\\Desktop" : ""), be = S(() => D.value ? D.value + "\\Documents" : ""), ge = S(() => D.value ? D.value + "\\Downloads" : ""), R = S(() => _.value && F.value.length > 0), ye = S(() => {
-      if (!M.value.trim() || w.value) return "";
-      const a = re.value.some((e) => e.name.toLowerCase() === M.value.trim().toLowerCase());
+    const ke = x(() => D.value ? D.value + "\\Desktop" : ""), be = x(() => D.value ? D.value + "\\Documents" : ""), ge = x(() => D.value ? D.value + "\\Downloads" : ""), T = x(() => _.value && F.value.length > 0), ye = x(() => {
+      if (!C.value.trim() || w.value) return "";
+      const a = re.value.some((e) => e.name.toLowerCase() === C.value.trim().toLowerCase());
       return l(a ? "mkdir.hintExists" : "mkdir.hintOk");
-    }), we = S(() => {
-      if (R.value) {
+    }), we = x(() => {
+      if (T.value) {
         let t = F.value;
         return i.mode === "directory" && (t = t.filter((c) => c.kind === "directory")), t;
       }
@@ -351,15 +351,15 @@ const Ie = (u, V) => {
       const e = b.value.toLowerCase();
       return a.filter((t) => t.name.toLowerCase().includes(e));
     });
-    S(() => {
-      if (!m.value) return [];
-      const a = m.value.split(/[/\\]/).filter(Boolean);
+    x(() => {
+      if (!k.value) return [];
+      const a = k.value.split(/[/\\]/).filter(Boolean);
       return a.map((e, t) => {
         let c;
         return t === 0 && /^[A-Za-z]:$/.test(e) ? c = e + "\\" : c = a.slice(0, t + 1).join("\\"), { label: e, path: c };
       });
     });
-    async function Be() {
+    async function Ie() {
       try {
         const a = await fetch(`${i.apiBase}/fs/home`);
         if (!a.ok) throw new Error(`HTTP ${a.status}`);
@@ -369,7 +369,7 @@ const Ie = (u, V) => {
         return console.warn("[fetchHome] 获取家目录失败:", a.message), "";
       }
     }
-    async function Te() {
+    async function Be() {
       try {
         const a = await fetch(`${i.apiBase}/fs/drives`);
         if (!a.ok) throw new Error(`HTTP ${a.status}`);
@@ -388,7 +388,7 @@ const Ie = (u, V) => {
       } catch {
       }
     }
-    async function W(a) {
+    async function Z(a) {
       oe.value = !0, z.value = "";
       try {
         const e = new URLSearchParams();
@@ -405,25 +405,25 @@ const Ie = (u, V) => {
           return;
         }
         const c = await t.json();
-        m.value = c.currentPath, K.value = c.parentPath, re.value = c.items || [];
+        k.value = c.currentPath, K.value = c.parentPath, re.value = c.items || [];
       } catch (e) {
         z.value = l("error.network", { message: e.message });
       } finally {
         oe.value = !1;
       }
     }
-    function Ae() {
-      if (R.value) {
-        N();
+    function Te() {
+      if (T.value) {
+        j();
         return;
       }
-      K.value && W(K.value);
+      K.value && Z(K.value);
     }
     function xe() {
-      D.value && j(D.value);
+      D.value && H(D.value);
     }
-    function j(a) {
-      b.value = "", N(), W(a);
+    function H(a) {
+      b.value = "", j(), Z(a);
     }
     function Se(a, e) {
       if (!a) return e || "";
@@ -438,7 +438,7 @@ const Ie = (u, V) => {
         if (t === "\\" && /^[A-Za-z]:/.test(e || ""))
           return (e || "").split("\\")[0] + "\\";
         if (!e) return t;
-        const O = e.split("\\"), et = t.split(/[\\\/]/).filter(Boolean), le = [...O];
+        const R = e.split("\\"), et = t.split(/[\\\/]/).filter(Boolean), le = [...R];
         for (const P of et)
           !P || P === "." || (P === ".." ? le.length > 1 && le.pop() : le.push(P));
         return le.join("\\");
@@ -447,17 +447,17 @@ const Ie = (u, V) => {
         return t.replace(/\\/g, "/").replace(/\/+/g, "/");
       if (!e) return t;
       const f = e.split("/").filter(Boolean), q = t.split(/[\\\/]/).filter(Boolean), ae = [...f];
-      for (const O of q)
-        !O || O === "." || (O === ".." ? ae.length > 0 && ae.pop() : ae.push(O));
+      for (const R of q)
+        !R || R === "." || (R === ".." ? ae.length > 0 && ae.pop() : ae.push(R));
       return "/" + ae.join("/");
     }
-    async function Le() {
-      const a = T.value.trim();
+    async function Ae() {
+      const a = B.value.trim();
       if (!a) {
         y.value = l("address.errorEmpty");
         return;
       }
-      const e = Se(a, m.value);
+      const e = Se(a, k.value);
       z.value = "", y.value = "";
       try {
         const t = await fetch(
@@ -473,72 +473,72 @@ const Ie = (u, V) => {
           y.value = c || l("address.errorInvalid", { path: e });
           return;
         }
-        T.value = e, await j(e);
+        B.value = e, await H(e);
       } catch (t) {
         y.value = l("error.network", { message: t.message });
       }
     }
+    function Le() {
+      Ae();
+    }
     function Ee() {
-      Le();
+      B.value = k.value || "", y.value = "", E.value && typeof E.value.blur == "function" && E.value.blur();
     }
     function He() {
-      T.value = m.value || "", y.value = "", H.value && typeof H.value.blur == "function" && H.value.blur();
-    }
-    function Re() {
-      ce = !0, Fe(() => {
-        H.value && typeof H.value.select == "function" && H.value.select();
+      ce = !0, De(() => {
+        E.value && typeof E.value.select == "function" && E.value.select();
       });
     }
     function je() {
-      ce = !1, y.value || (T.value = m.value || "");
+      ce = !1, y.value || (B.value = k.value || "");
     }
-    function Ne() {
+    function Re() {
       y.value = "";
     }
-    ue(m, (a) => {
-      ce || (T.value = a || ""), y.value && (y.value = "");
+    ue(k, (a) => {
+      ce || (B.value = a || ""), y.value && (y.value = ""), i.mode === "directory" && a && !T.value && (v.value = [a]);
     });
-    function Oe() {
-      R.value && b.value ? ee(b.value) : W(m.value);
+    function Ne() {
+      T.value && b.value ? ee(b.value) : Z(k.value);
     }
-    function Ce(a) {
-      return p.value.includes(a);
+    function Oe(a) {
+      return v.value.includes(a);
     }
-    function A(a) {
+    function W(a) {
       if (!i.multiple) {
-        p.value = p.value[0] === a ? [] : [a];
+        v.value = v.value[0] === a ? [] : [a];
         return;
       }
-      const e = p.value.indexOf(a);
-      e >= 0 ? p.value.splice(e, 1) : p.value.push(a);
+      const e = v.value.indexOf(a);
+      e >= 0 ? v.value.splice(e, 1) : v.value.push(a);
     }
     function Ve() {
-      p.value = [];
+      i.mode === "directory" && k.value && !T.value ? v.value = [k.value] : v.value = [];
     }
-    function Me(a, e) {
-      a.kind === "directory" ? (i.mode, A(a.path)) : i.mode === "file" && A(a.path);
+    function Ce(a, e) {
+      a.kind === "directory" ? (i.mode, W(a.path)) : i.mode === "file" && W(a.path);
     }
-    function $e(a) {
+    function Me(a) {
       if (!i.multiple) {
-        Me(a);
+        Ce(a);
         return;
       }
-      (a.kind === "directory" || i.mode === "file") && A(a.path);
+      (a.kind === "directory" || i.mode === "file") && W(a.path);
     }
     function Ge(a) {
-      a.kind === "directory" && j(a.path);
+      a.kind === "directory" && H(a.path);
     }
     function Ue() {
-      p.value.length > 0 && C("confirm", [...p.value]);
+      v.value.length > 0 && S("confirm", [...v.value]);
     }
     function Ze() {
-      _.value = !_.value, _.value ? b.value && ee(b.value) : N();
+      _.value = !_.value, _.value ? b.value && ee(b.value) : j();
     }
-    function N() {
-      L && (L.abort(), L = null), F.value = [], Q.value = !1, J.value = 0, Z.value = !1;
+    function j() {
+      A && (A.abort(), A = null), F.value = [], Q.value = !1, J.value = 0, U.value = !1;
     }
     function We() {
-      b.value = "", _.value && N();
+      b.value = "", _.value && j();
     }
     function qe() {
       _.value && b.value.trim() && ee(b.value.trim());
@@ -547,7 +547,7 @@ const Ie = (u, V) => {
     ue(b, (a) => {
       if (_.value) {
         if (de && clearTimeout(de), !a.trim()) {
-          N();
+          j();
           return;
         }
         de = setTimeout(() => {
@@ -556,14 +556,14 @@ const Ie = (u, V) => {
       }
     });
     async function ee(a) {
-      L && L.abort(), L = new AbortController(), Z.value = !0, F.value = [], Q.value = !1, J.value = 0;
+      A && A.abort(), A = new AbortController(), U.value = !0, F.value = [], Q.value = !1, J.value = 0;
       try {
         const e = new URLSearchParams({
           q: a,
           mode: i.mode === "directory" ? "directory" : i.mode === "file" ? "file" : "all",
           limit: "200"
         }), t = await fetch(`${i.apiBase}/fs/search?${e}`, {
-          signal: L.signal
+          signal: A.signal
         });
         if (!t.ok) {
           let f = `HTTP ${t.status}`;
@@ -572,7 +572,7 @@ const Ie = (u, V) => {
           } catch {
             f = l("error.searchFailed");
           }
-          F.value = [], Z.value = !1;
+          F.value = [], U.value = !1;
           return;
         }
         const c = await t.json();
@@ -581,7 +581,7 @@ const Ie = (u, V) => {
         if (e.name === "AbortError") return;
         console.warn("[globalSearch] 搜索失败:", e.message), F.value = [];
       } finally {
-        Z.value = !1;
+        U.value = !1;
       }
     }
     function Ke(a) {
@@ -599,40 +599,40 @@ const Ie = (u, V) => {
       }
     }
     function Qe() {
-      R.value || m.value && (G.value = !0, M.value = "", w.value = "", ie.value = m.value, Fe(() => {
+      T.value || k.value && (O.value = !0, C.value = "", w.value = "", ie.value = k.value, De(() => {
         Y.value && typeof Y.value.focus == "function" && Y.value.focus();
       }));
     }
     function te() {
-      E.value || (G.value = !1, M.value = "", w.value = "");
+      L.value || (O.value = !1, C.value = "", w.value = "");
     }
-    async function ze() {
-      const a = M.value.trim();
+    async function $e() {
+      const a = C.value.trim();
       if (!a) {
         w.value = l("error.invalidName") || "名称不能为空";
         return;
       }
-      if (!E.value) {
-        E.value = !0, w.value = "";
+      if (!L.value) {
+        L.value = !0, w.value = "";
         try {
           const e = await fetch(`${i.apiBase}/fs/mkdir`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ parent: m.value, name: a })
+            body: JSON.stringify({ parent: k.value, name: a })
           }), t = await e.json().catch(() => ({}));
           if (!e.ok) {
             w.value = t.error || `HTTP ${e.status}`;
             return;
           }
-          G.value = !1, M.value = "", w.value = "", C("created", { path: t.path, name: t.name, parent: m.value }), await W(m.value), i.autoSelectOnMkdir && t.path && (i.multiple ? p.value.includes(t.path) || p.value.push(t.path) : p.value = [t.path]);
+          O.value = !1, C.value = "", w.value = "", S("created", { path: t.path, name: t.name, parent: k.value }), await Z(k.value), i.autoSelectOnMkdir && t.path && (i.multiple ? v.value.includes(t.path) || v.value.push(t.path) : v.value = [t.path]);
         } catch (e) {
           w.value = l("error.network", { message: e.message });
         } finally {
-          E.value = !1;
+          L.value = !1;
         }
       }
     }
-    function De(a) {
+    function ze(a) {
       if (!a || a === 0) return "0 B";
       const e = 1024, t = ["B", "KB", "MB", "GB"], c = Math.floor(Math.log(a) / Math.log(e));
       return `${parseFloat((a / Math.pow(e, c)).toFixed(2))} ${t[c]}`;
@@ -649,9 +649,9 @@ const Ie = (u, V) => {
     }
     return ue(() => i.visible, async (a) => {
       if (a) {
-        p.value = [], b.value = "", z.value = "", G.value = !1, M.value = "", w.value = "", N();
-        const e = await Be();
-        await Te(), await _e();
+        v.value = [], b.value = "", z.value = "", O.value = !1, C.value = "", w.value = "", j();
+        const e = await Ie();
+        await Be(), await _e();
         let t = "";
         const c = (i.defaultPath || "").trim();
         if (c) {
@@ -664,33 +664,33 @@ const Ie = (u, V) => {
             z.value = l("address.errorInvalidDefault");
           }
         }
-        t || (t = e || ""), T.value = t, await W(t);
+        t || (t = e || ""), B.value = t, await Z(t);
       } else
-        N(), G.value = !1;
+        j(), O.value = !1;
     }), (a, e) => (r(), tt(at, { to: "body" }, [
       u.visible ? (r(), n("div", {
         key: 0,
         class: "modal-overlay",
-        onClick: e[12] || (e[12] = I((t) => a.$emit("close"), ["self"]))
+        onClick: e[9] || (e[9] = V((t) => a.$emit("close"), ["self"]))
       }, [
         s("div", {
-          class: x(["modal-container", { "modal-theme-light": u.theme === "light" }])
+          class: $(["modal-container", { "modal-theme-light": u.theme === "light" }])
         }, [
           s("div", dt, [
             s("h3", ut, [
-              v(h, {
+              h(m, {
                 name: u.mode === "file" ? "file" : "folder",
                 size: 18,
                 color: se.value
               }, null, 8, ["name", "color"]),
-              $(" " + o(l(u.mode === "file" ? "modal.title.file" : "modal.title.directory")), 1)
+              M(" " + o(l(u.mode === "file" ? "modal.title.file" : "modal.title.directory")), 1)
             ]),
             s("button", {
               class: "close-btn",
               onClick: e[0] || (e[0] = (t) => a.$emit("close")),
               title: l("modal.close")
             }, [
-              v(h, {
+              h(m, {
                 name: "close",
                 size: 16
               })
@@ -699,11 +699,11 @@ const Ie = (u, V) => {
           s("div", vt, [
             s("button", {
               class: "tool-btn tool-btn-icon",
-              onClick: Ae,
+              onClick: Te,
               disabled: !K.value,
               title: l("tooltip.back")
             }, [
-              v(h, {
+              h(m, {
                 name: "arrowUp",
                 size: 14
               })
@@ -713,36 +713,36 @@ const Ie = (u, V) => {
               onClick: xe,
               title: l("tooltip.home")
             }, [
-              v(h, {
+              h(m, {
                 name: "home",
                 size: 14
               })
             ], 8, mt),
             s("button", {
               class: "tool-btn tool-btn-icon",
-              onClick: Oe,
+              onClick: Ne,
               title: l("tooltip.refresh")
             }, [
-              v(h, {
+              h(m, {
                 name: "refresh",
                 size: 14
               })
             ], 8, pt),
-            u.enableMkdir && !R.value ? (r(), n("button", {
+            u.enableMkdir && !T.value ? (r(), n("button", {
               key: 0,
               class: "tool-btn tool-btn-icon",
               onClick: Qe,
               title: l("tooltip.newFolder")
             }, [
-              v(h, {
+              h(m, {
                 name: "folderPlus",
                 size: 14
               })
-            ], 8, kt)) : k("", !0),
+            ], 8, kt)) : p("", !0),
             s("div", {
-              class: x(["address-bar", { "has-error": y.value }])
+              class: $(["address-bar", { "has-error": y.value }])
             }, [
-              v(h, {
+              h(m, {
                 name: "folder",
                 size: 13,
                 color: y.value ? "#f87171" : "#8b91a8",
@@ -750,8 +750,8 @@ const Ie = (u, V) => {
               }, null, 8, ["color"]),
               fe(s("input", {
                 ref_key: "addressInputRef",
-                ref: H,
-                "onUpdate:modelValue": e[1] || (e[1] = (t) => T.value = t),
+                ref: E,
+                "onUpdate:modelValue": e[1] || (e[1] = (t) => B.value = t),
                 type: "text",
                 class: "address-bar-input",
                 placeholder: l("address.placeholder"),
@@ -761,30 +761,30 @@ const Ie = (u, V) => {
                 autocorrect: "off",
                 autocapitalize: "off",
                 onKeydown: [
-                  U(Ee, ["enter"]),
-                  U(He, ["esc"])
+                  G(Le, ["enter"]),
+                  G(Ee, ["esc"])
                 ],
-                onFocus: Re,
+                onFocus: He,
                 onBlur: je
               }, null, 40, bt), [
-                [ve, T.value]
+                [ve, B.value]
               ]),
               y.value ? (r(), n("button", {
                 key: 0,
                 class: "address-bar-clear",
                 title: y.value,
-                onClick: Ne
+                onClick: Re
               }, [
-                v(h, {
+                h(m, {
                   name: "circleX",
                   size: 14,
                   color: "#f87171"
                 })
-              ], 8, gt)) : k("", !0)
+              ], 8, gt)) : p("", !0)
             ], 2)
           ]),
           s("div", yt, [
-            v(h, {
+            h(m, {
               name: "search",
               size: 16,
               color: "#8b91a8",
@@ -795,7 +795,7 @@ const Ie = (u, V) => {
               type: "text",
               class: "search-input",
               placeholder: _.value ? l("search.placeholderGlobal", { type: l("search.type." + (u.mode === "file" ? "file" : u.mode === "directory" ? "directory" : "all")) }) : l("search.placeholderLocal"),
-              onKeydown: U(qe, ["enter"])
+              onKeydown: G(qe, ["enter"])
             }, null, 40, wt), [
               [ve, b.value]
             ]),
@@ -804,26 +804,26 @@ const Ie = (u, V) => {
               class: "clear-search",
               onClick: We
             }, [
-              v(h, {
+              h(m, {
                 name: "close",
                 size: 14
               })
-            ])) : k("", !0),
+            ])) : p("", !0),
             s("div", {
               class: "global-toggle",
               title: _.value ? l("tooltip.globalSearchOn") : l("tooltip.globalSearchOff")
             }, [
               s("span", xt, o(l("search.globalLabel")), 1),
               s("button", {
-                class: x(["toggle-switch", { active: _.value }]),
+                class: $(["toggle-switch", { active: _.value }]),
                 onClick: Ze
-              }, [...e[13] || (e[13] = [
+              }, [...e[10] || (e[10] = [
                 s("span", { class: "toggle-knob" }, null, -1)
               ])], 2)
             ], 8, _t),
             _.value ? (r(), n("div", {
               key: 1,
-              class: x(["index-status", g.value.status]),
+              class: $(["index-status", g.value.status]),
               title: g.value.status === "ready" ? l("tooltip.indexReady", {
                 totalFiles: g.value.totalFiles,
                 scannedRoots: (g.value.scannedRoots || []).join(", ") || "unknown"
@@ -833,9 +833,9 @@ const Ie = (u, V) => {
               }) : l("tooltip.indexIdle"),
               onClick: e[3] || (e[3] = (t) => g.value.status !== "indexing" && Xe())
             }, [
-              e[14] || (e[14] = s("span", { class: "status-dot" }, null, -1)),
+              e[11] || (e[11] = s("span", { class: "status-dot" }, null, -1)),
               s("span", Ct, o(g.value.status === "ready" ? l("status.indexReady") : g.value.status === "indexing" ? l("status.indexing") : l("status.indexIdle")), 1)
-            ], 10, St)) : k("", !0)
+            ], 10, St)) : p("", !0)
           ]),
           s("div", Mt, [
             s("div", $t, [
@@ -845,126 +845,108 @@ const Ie = (u, V) => {
                   class: "sidebar-item",
                   onClick: xe
                 }, [
-                  v(h, {
+                  h(m, {
                     name: "home",
                     size: 15
                   }),
-                  $(" " + o(l("sidebar.home")), 1)
+                  M(" " + o(l("sidebar.home")), 1)
                 ]),
                 ke.value ? (r(), n("div", {
                   key: 0,
                   class: "sidebar-item",
-                  onClick: e[4] || (e[4] = (t) => j(ke.value))
+                  onClick: e[4] || (e[4] = (t) => H(ke.value))
                 }, [
-                  v(h, {
+                  h(m, {
                     name: "monitor",
                     size: 15
                   }),
-                  $(" " + o(l("sidebar.desktop")), 1)
-                ])) : k("", !0),
+                  M(" " + o(l("sidebar.desktop")), 1)
+                ])) : p("", !0),
                 be.value ? (r(), n("div", {
                   key: 1,
                   class: "sidebar-item",
-                  onClick: e[5] || (e[5] = (t) => j(be.value))
+                  onClick: e[5] || (e[5] = (t) => H(be.value))
                 }, [
-                  v(h, {
+                  h(m, {
                     name: "file",
                     size: 15
                   }),
-                  $(" " + o(l("sidebar.documents")), 1)
-                ])) : k("", !0),
+                  M(" " + o(l("sidebar.documents")), 1)
+                ])) : p("", !0),
                 ge.value ? (r(), n("div", {
                   key: 2,
                   class: "sidebar-item",
-                  onClick: e[6] || (e[6] = (t) => j(ge.value))
+                  onClick: e[6] || (e[6] = (t) => H(ge.value))
                 }, [
-                  v(h, {
+                  h(m, {
                     name: "download",
                     size: 15
                   }),
-                  $(" " + o(l("sidebar.downloads")), 1)
-                ])) : k("", !0)
+                  M(" " + o(l("sidebar.downloads")), 1)
+                ])) : p("", !0)
               ]),
               X.value.length ? (r(), n("div", Ft, [
                 s("div", Pt, o(l("sidebar.drives")), 1),
                 (r(!0), n(he, null, me(X.value, (t) => (r(), n("div", {
                   key: t,
-                  class: x(["sidebar-item", { active: m.value === t }]),
-                  onClick: (c) => j(t)
+                  class: $(["sidebar-item", { active: k.value === t }]),
+                  onClick: (c) => H(t)
                 }, [
-                  v(h, {
+                  h(m, {
                     name: "hardDrive",
                     size: 15
                   }),
-                  $(" " + o(t), 1)
+                  M(" " + o(t), 1)
                 ], 10, It))), 128))
-              ])) : k("", !0)
+              ])) : p("", !0)
             ]),
             s("div", {
               class: "file-list-container",
-              onClick: I(Ve, ["self"])
+              onClick: V(Ve, ["self"])
             }, [
               oe.value ? (r(), n("div", Bt, [
-                e[15] || (e[15] = s("span", { class: "spinner" }, null, -1)),
-                $(" " + o(l("state.loading")), 1)
+                e[12] || (e[12] = s("span", { class: "spinner" }, null, -1)),
+                M(" " + o(l("state.loading")), 1)
               ])) : z.value ? (r(), n("div", Tt, [
-                v(h, {
+                h(m, {
                   name: "circleX",
                   size: 18,
                   color: "currentColor"
                 }),
-                $(" " + o(z.value), 1)
-              ])) : Z.value ? (r(), n("div", At, [
-                e[16] || (e[16] = s("span", { class: "spinner" }, null, -1)),
-                $(" " + o(l("state.globalSearching")), 1)
+                M(" " + o(z.value), 1)
+              ])) : U.value ? (r(), n("div", At, [
+                e[13] || (e[13] = s("span", { class: "spinner" }, null, -1)),
+                M(" " + o(l("state.globalSearching")), 1)
               ])) : we.value.length === 0 ? (r(), n("div", Lt, o(b.value ? l("state.emptySearch") : l("state.emptyDir")), 1)) : (r(), n("div", Et, [
                 F.value.length > 0 ? (r(), n("div", Ht, [
-                  v(h, {
+                  h(m, {
                     name: "search",
                     size: 14,
                     color: "#8b91a8"
                   }),
                   s("span", {
                     innerHTML: l("results.found", { count: F.value.length })
-                  }, null, 8, Rt),
-                  Q.value ? (r(), n("span", jt, o(l("results.truncated")), 1)) : k("", !0),
+                  }, null, 8, jt),
+                  Q.value ? (r(), n("span", Rt, o(l("results.truncated")), 1)) : p("", !0),
                   s("span", {
-                    class: x(["engine-badge", ne.value])
+                    class: $(["engine-badge", ne.value])
                   }, o(ne.value === "index" ? l("search.engineIndex") : l("search.engineWalk")), 3),
                   s("span", Nt, o(J.value) + o(l("unit.ms")), 1)
-                ])) : k("", !0),
-                u.mode === "directory" && !R.value ? (r(), n("div", {
-                  key: 1,
-                  class: x(["file-row select-current-dir", { selected: Ce(m.value) }]),
-                  onClick: [
-                    e[7] || (e[7] = I((t) => A(m.value), ["exact"])),
-                    e[8] || (e[8] = I((t) => A(m.value), ["ctrl"])),
-                    e[9] || (e[9] = I((t) => A(m.value), ["meta"]))
-                  ]
-                }, [
-                  v(h, {
-                    name: "circleCheck",
-                    size: 18,
-                    color: "#a78bfa",
-                    class: "file-icon"
-                  }),
-                  s("span", Ot, o(l("fileRow.selectCurrent")), 1),
-                  s("span", Vt, o(m.value), 1)
-                ], 2)) : k("", !0),
+                ])) : p("", !0),
                 (r(!0), n(he, null, me(we.value, (t) => (r(), n("div", {
                   key: t.path,
-                  class: x(["file-row", {
-                    selected: Ce(t.path),
+                  class: $(["file-row", {
+                    selected: Oe(t.path),
                     "is-directory": t.kind === "directory"
                   }]),
                   onClick: [
-                    I((c) => Me(t), ["exact"]),
-                    I((c) => $e(t), ["ctrl"]),
-                    I((c) => $e(t), ["meta"])
+                    V((c) => Ce(t), ["exact"]),
+                    V((c) => Me(t), ["ctrl"]),
+                    V((c) => Me(t), ["meta"])
                   ],
                   onDblclick: (c) => Ge(t)
                 }, [
-                  v(h, {
+                  h(m, {
                     name: t.kind === "directory" ? "folder" : "file",
                     size: 18,
                     color: Ye(t),
@@ -973,124 +955,124 @@ const Ie = (u, V) => {
                   s("span", {
                     class: "file-name",
                     title: t.name
-                  }, o(t.name), 9, Ut),
-                  R.value ? (r(), n("span", {
+                  }, o(t.name), 9, Vt),
+                  T.value ? (r(), n("span", {
                     key: 0,
                     class: "file-parent-path",
                     title: t.path
-                  }, o(Ke(t.path)), 9, Zt)) : k("", !0),
+                  }, o(Ke(t.path)), 9, Gt)) : p("", !0),
                   t.kind === "file" ? (r(), n("span", {
                     key: 1,
                     class: "file-size",
-                    title: De(t.size)
-                  }, o(De(t.size)), 9, Wt)) : k("", !0),
+                    title: ze(t.size)
+                  }, o(ze(t.size)), 9, Ut)) : p("", !0),
                   t.modified ? (r(), n("span", {
                     key: 2,
                     class: "file-modified",
                     title: t.modified
-                  }, o(Je(t.modified)), 9, qt)) : k("", !0)
-                ], 42, Gt))), 128))
+                  }, o(Je(t.modified)), 9, Zt)) : p("", !0)
+                ], 42, Ot))), 128))
               ]))
             ])
           ]),
-          s("div", Kt, [
-            s("div", Xt, [
-              p.value.length === 0 ? (r(), n("span", Qt, o(l(u.mode === "file" ? "footer.unselectedFile" : "footer.unselectedDir")), 1)) : u.multiple ? (r(), n("span", Yt, [
+          s("div", Wt, [
+            s("div", qt, [
+              v.value.length === 0 ? (r(), n("span", Kt, o(l(u.mode === "file" ? "footer.unselectedFile" : "footer.unselectedDir")), 1)) : u.multiple ? (r(), n("span", Qt, [
                 s("span", {
-                  innerHTML: l("footer.selected", { count: p.value.length })
-                }, null, 8, ea)
+                  innerHTML: l("footer.selected", { count: v.value.length })
+                }, null, 8, Jt)
               ])) : (r(), n("span", {
                 key: 1,
                 class: "has-selection single-path",
-                title: p.value[0]
-              }, o(p.value[0]), 9, Jt))
+                title: v.value[0]
+              }, o(v.value[0]), 9, Xt))
             ]),
-            s("div", ta, [
+            s("div", Yt, [
               s("button", {
                 class: "btn btn-cancel",
-                onClick: e[10] || (e[10] = (t) => a.$emit("close"))
+                onClick: e[7] || (e[7] = (t) => a.$emit("close"))
               }, o(l("footer.cancel")), 1),
               s("button", {
                 class: "btn btn-confirm",
-                disabled: p.value.length === 0,
+                disabled: v.value.length === 0,
                 onClick: Ue
-              }, o(l("footer.confirm")), 9, aa)
+              }, o(l("footer.confirm")), 9, ea)
             ])
           ]),
-          G.value ? (r(), n("div", {
+          O.value ? (r(), n("div", {
             key: 0,
             class: "mkdir-overlay",
-            onClick: I(te, ["self"]),
-            onKeydown: U(te, ["esc"])
+            onClick: V(te, ["self"]),
+            onKeydown: G(te, ["esc"])
           }, [
             s("div", {
-              class: x(["mkdir-dialog", { "modal-theme-light": u.theme === "light" }])
+              class: $(["mkdir-dialog", { "modal-theme-light": u.theme === "light" }])
             }, [
-              s("div", la, [
-                v(h, {
+              s("div", ta, [
+                h(m, {
                   name: "folderPlus",
                   size: 18,
                   color: "#a78bfa"
                 }),
-                s("span", sa, o(l("mkdir.title")), 1)
+                s("span", aa, o(l("mkdir.title")), 1)
               ]),
-              s("div", oa, [
-                s("label", ra, o(l("mkdir.parentLabel")), 1),
+              s("div", la, [
+                s("label", sa, o(l("mkdir.parentLabel")), 1),
                 s("div", {
                   class: "mkdir-parent-path",
                   title: ie.value
-                }, o(ie.value), 9, na),
-                s("label", ia, o(l("mkdir.nameLabel")), 1),
+                }, o(ie.value), 9, oa),
+                s("label", ra, o(l("mkdir.nameLabel")), 1),
                 fe(s("input", {
                   id: "mkdir-name-input",
                   ref_key: "mkdirNameInput",
                   ref: Y,
-                  "onUpdate:modelValue": e[11] || (e[11] = (t) => M.value = t),
+                  "onUpdate:modelValue": e[8] || (e[8] = (t) => C.value = t),
                   type: "text",
-                  class: x(["mkdir-input", { "has-error": w.value }]),
+                  class: $(["mkdir-input", { "has-error": w.value }]),
                   placeholder: l("mkdir.namePlaceholder"),
                   onKeydown: [
-                    U(ze, ["enter"]),
-                    U(te, ["esc"])
+                    G($e, ["enter"]),
+                    G(te, ["esc"])
                   ],
                   maxlength: "255"
-                }, null, 42, ca), [
-                  [ve, M.value]
+                }, null, 42, na), [
+                  [ve, C.value]
                 ]),
-                w.value ? (r(), n("div", da, [
-                  v(h, {
+                w.value ? (r(), n("div", ia, [
+                  h(m, {
                     name: "circleX",
                     size: 14,
                     color: "currentColor"
                   }),
                   s("span", null, o(w.value), 1)
-                ])) : ye.value ? (r(), n("div", ua, o(ye.value), 1)) : k("", !0)
+                ])) : ye.value ? (r(), n("div", ca, o(ye.value), 1)) : p("", !0)
               ]),
-              s("div", fa, [
+              s("div", da, [
                 s("button", {
                   class: "btn btn-cancel",
                   onClick: te,
-                  disabled: E.value
-                }, o(l("mkdir.cancel")), 9, va),
+                  disabled: L.value
+                }, o(l("mkdir.cancel")), 9, ua),
                 s("button", {
                   class: "btn btn-confirm",
-                  disabled: !M.value.trim() || E.value,
-                  onClick: ze
+                  disabled: !C.value.trim() || L.value,
+                  onClick: $e
                 }, [
-                  E.value ? (r(), n("span", ma)) : k("", !0),
-                  $(" " + o(l("mkdir.confirm")), 1)
-                ], 8, ha)
+                  L.value ? (r(), n("span", va)) : p("", !0),
+                  M(" " + o(l("mkdir.confirm")), 1)
+                ], 8, fa)
               ])
             ], 2)
-          ], 32)) : k("", !0)
+          ], 32)) : p("", !0)
         ], 2)
-      ])) : k("", !0)
+      ])) : p("", !0)
     ]));
   }
-}, ba = /* @__PURE__ */ Ie(pa, [["__scopeId", "data-v-861d86a8"]]);
+}, pa = /* @__PURE__ */ Pe(ha, [["__scopeId", "data-v-e2caddbc"]]);
 export {
-  ba as FilePickerModal,
-  h as SvgIcon,
+  pa as FilePickerModal,
+  m as SvgIcon,
   rt as getFileTypeColor,
   lt as icons
 };

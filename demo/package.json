@@ -1,0 +1,24 @@
+{
+  "name": "local-file-picker-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Demo project that consumes the latest local-file-picker from npm.",
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "node server/index.js",
+    "dev:client": "vite --config client/vite.config.js",
+    "build": "vite build --config client/vite.config.js",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "local-file-picker": "latest",
+    "vue": "^3.5.34"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.7",
+    "concurrently": "^9.1.2",
+    "vite": "^7.0.14"
+  }
+}
