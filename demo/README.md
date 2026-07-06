@@ -24,7 +24,7 @@ cd demo
 npm install
 ```
 
-`local-file-picker` 字段为 `"latest"`,运行 `npm install` 时会拉取当前最新发布版本(目前为 `0.1.6`)。
+`local-file-picker` 字段为 `"latest"`,运行 `npm install` 时会拉取当前最新发布版本(目前为 `0.2.1`)。
 
 ## 启动
 
