@@ -146,20 +146,102 @@ export function createFilePickerMiddleware(options = {}) {
 
   // ========== 文件监听（增量更新） ==========
 
-  function startWatching() {
-    const watchDirs = [os.homedir()];
-    for (const d of ['Desktop', 'Documents', 'Downloads', 'Projects', 'workspace']) {
-      const p = path.join(os.homedir(), d);
-      try { fs.accessSync(p, fs.constants.R_OK); watchDirs.push(p); } catch { /* skip */ }
+  // 单实例 watcher 上限：Linux 的 inotify 配额（fs.inotify.max_user_watches，常见默认 65536）
+  // 是整用户会话共享的，超限后停止新增并降级为"仅索引搜索"，绝不拖垮整个会话
+  const MAX_WATCHERS = 20000;
+  let watcherQuotaWarned = false;
+
+  function onWatcherQuotaExceeded() {
+    if (watcherQuotaWarned) return;
+    watcherQuotaWarned = true;
+    console.warn('[file-picker] 系统文件监听配额已耗尽（ENOSPC），文件变更实时同步已停用；索引搜索与 /fs/reindex 不受影响。可通过 sudo sysctl fs.inotify.max_user_watches=524288 提高上限后重启服务恢复');
+  }
+
+  // 与 indexer/worker.js 的索引根目录策略保持一致：只监听已被索引覆盖的范围
+  function getWatchRoots() {
+    const roots = [];
+    const home = os.homedir();
+    if (home) {
+      for (const sub of ['Desktop', 'Documents', 'Downloads', 'workspace', 'Projects', 'Code']) {
+        const p = path.join(home, sub);
+        try { fs.accessSync(p, fs.constants.R_OK); roots.push(p); } catch { /* skip */ }
+      }
+      if (roots.length === 0) roots.push(home);
     }
-    for (const dir of watchDirs) {
-      try {
-        const watcher = fs.watch(dir, { recursive: true }, (eventType, filename) => {
-          if (!filename || filename.startsWith('.')) return;
-          handleFsChange(path.join(dir, filename));
-        });
-        watchers.set(dir, watcher);
-      } catch { /* recursive watch 不支持，忽略 */ }
+    if (process.platform === 'win32') {
+      for (const drive of ['D:', 'E:', 'F:']) {
+        const drivePath = drive + '\\';
+        try { fs.accessSync(drivePath, fs.constants.R_OK); roots.push(drivePath); } catch { /* skip */ }
+      }
+    }
+    return roots;
+  }
+
+  function isSkippedName(name) {
+    return name.startsWith('.') || SKIP_DIRS.has(name.toLowerCase());
+  }
+
+  function attachWatcher(dir) {
+    if (watchers.has(dir)) return;
+    if (watchers.size >= MAX_WATCHERS) { onWatcherQuotaExceeded(); return; }
+    let watcher;
+    try {
+      watcher = fs.watch(dir, (eventType, filename) => {
+        if (!filename || filename.startsWith('.')) return;
+        const fullPath = path.join(dir, filename);
+        handleFsChange(fullPath);
+        // 非递归 watch 不覆盖新建子目录，检测到新目录时补挂监听
+        if (eventType === 'rename' && !isSkippedName(filename)) {
+          try {
+            if (fs.statSync(fullPath).isDirectory()) watchTree(fullPath).catch(() => { /* ignore */ });
+          } catch { /* 已删除，忽略 */ }
+        }
+      });
+    } catch (err) {
+      if (err && err.code === 'ENOSPC') onWatcherQuotaExceeded();
+      return;
+    }
+    // fs.watch 的失败（目录被删、inotify 耗尽）大多以异步 error 事件抛出，
+    // 不挂监听就是 uncaughtException，必须逐个兜底
+    watcher.on('error', (err) => {
+      watchers.delete(dir);
+      try { watcher.close(); } catch { /* ignore */ }
+      if (err && err.code === 'ENOSPC') onWatcherQuotaExceeded();
+    });
+    watchers.set(dir, watcher);
+  }
+
+  // 手动递归挂 watch：跳过点目录与 SKIP_DIRS（node_modules / .cache 等），
+  // 避免 fs.watch recursive:true 在 Linux 上对海量无关子目录逐个注册 inotify 导致 ENOSPC
+  async function watchTree(rootDir) {
+    const queue = [rootDir];
+    for (let i = 0; i < queue.length; i++) {
+      const dir = queue[i];
+      attachWatcher(dir);
+      let entries;
+      try { entries = await fs.promises.readdir(dir, { withFileTypes: true }); } catch { continue; }
+      for (const entry of entries) {
+        if (entry.isDirectory() && !isSkippedName(entry.name)) queue.push(path.join(dir, entry.name));
+      }
+    }
+  }
+
+  function startWatching() {
+    for (const root of getWatchRoots()) {
+      if (process.platform === 'win32') {
+        // Windows 原生支持递归 watch，单句柄即可，无需逐目录注册
+        try {
+          const watcher = fs.watch(root, { recursive: true }, (eventType, filename) => {
+            if (!filename) return;
+            if (filename.split(/[\\/]/).some(isSkippedName)) return;
+            handleFsChange(path.join(root, filename));
+          });
+          watcher.on('error', () => { try { watcher.close(); } catch { /* ignore */ } });
+          watchers.set(root, watcher);
+        } catch { /* recursive watch 不可用，忽略 */ }
+      } else {
+        watchTree(root).catch(() => { /* 单根失败不影响其他根 */ });
+      }
     }
   }
 
